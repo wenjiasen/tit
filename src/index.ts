@@ -1,4 +1,5 @@
 export * from './application';
+export * from './decorators';
 export * from './lib';
 export * from './factory';
 export * from './logger';

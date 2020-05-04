@@ -1,5 +1,9 @@
-import { Context } from './context';
+import { IContext } from './context';
 
 export interface IServer {
-  readonly ctx: Context;
+  readonly ctx: IContext;
+}
+
+export class TitServer implements IServer {
+  constructor(readonly ctx: IContext) {}
 }

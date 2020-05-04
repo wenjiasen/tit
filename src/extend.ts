@@ -1,5 +1,5 @@
 import { IApplication } from '.';
 
-export interface TitExtend {
+export interface IExtend {
   reduce: (app: IApplication) => void;
 }

@@ -3,7 +3,7 @@ import path from 'path';
 import { IApplication } from '..';
 import { TitLogger } from '../logger';
 import { walkDirectory } from './util';
-import { TitExtend } from '../extend';
+import { IExtend } from '../extend';
 
 let extendDir = './src/extend';
 let ext = '.ts';
@@ -25,13 +25,13 @@ export class ExtendLoader {
     const files = walkDirectory(rootPath).filter((file) => {
       return path.extname(file).toLowerCase() === ext;
     });
-    const modules = new Map<string, TitExtend>();
+    const modules = new Map<string, IExtend>();
     for (const file of files) {
       const modulePath = `${file}`;
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const mod = require(modulePath);
       const name = path.relative(rootPath, modulePath);
-      const instance: TitExtend = new mod.default();
+      const instance: IExtend = new mod.default();
       instance.reduce(app);
       modules.set(name, instance);
     }

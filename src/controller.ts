@@ -6,7 +6,7 @@ export interface IController {
   readonly app: IApplication;
 }
 
-export class Controller implements IController {
+export class TitController implements IController {
   readonly ctx!: IContext;
   readonly app!: IApplication;
 }
