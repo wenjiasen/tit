@@ -1,6 +1,6 @@
 {
   "name": "wenjs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple api framework by use TypeScript & Node.js",
   "main": "./dist/index.js",
   "scripts": {
