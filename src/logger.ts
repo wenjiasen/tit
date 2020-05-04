@@ -1,5 +1,4 @@
 import { isProductionModel } from './util/helper';
-import { configureScope, captureMessage, captureException, Severity } from '@sentry/node';
 class Logger {
   debug(...args: any): void {
     if (!isProductionModel()) {
@@ -12,16 +11,13 @@ class Logger {
   }
 
   warn(msg: string): void {
-    configureScope((scope) => {
-      scope.setLevel(Severity.Warning);
-      captureMessage(msg);
-    });
+    console.warn(msg);
   }
 
   error(err: Error): void {
-    //TODO:
     console.error(err);
   }
 }
+//TODO：支持由外部项目配置如何处理日志
 const logger = new Logger();
-export { logger as AnyLogger };
+export { logger as WenLogger };

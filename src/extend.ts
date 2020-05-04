@@ -1,5 +1,5 @@
-import { IAnyApplication } from '.';
+import { IWenApplication } from '.';
 
-export interface AnyExtend {
-  reduce: (app: IAnyApplication) => void;
+export interface WenExtend {
+  reduce: (app: IWenApplication) => void;
 }

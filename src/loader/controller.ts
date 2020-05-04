@@ -1,10 +1,10 @@
 import appRootPath from 'app-root-path';
 import path from 'path';
 import fs from 'fs';
-import { IAnyApplication } from '..';
-import { AnyLogger } from '../logger';
+import { IWenApplication } from '..';
+import { WenLogger } from '../logger';
 import { walkDirectory } from './util';
-import { AnyController } from '../controller';
+import { WenController } from '../controller';
 let controllerDir = './src/controller';
 let ext = '.ts';
 if (process.env.NODE_ENV === 'production') {
@@ -23,12 +23,12 @@ export class ControllerLoader {
     }
   }
 
-  public async load(app: IAnyApplication): Promise<void> {
+  public async load(app: IWenApplication): Promise<void> {
     const rootPath = path.resolve(appRootPath.path, this.root);
     const controllerPaths = walkDirectory(rootPath).filter((file) => {
       return path.extname(file).toLowerCase() === ext;
     });
-    const controllers = new Map<string, AnyController>();
+    const controllers = new Map<string, WenController>();
     for (const controllerPath of controllerPaths) {
       const modulePath = `${controllerPath}`;
       // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -36,6 +36,6 @@ export class ControllerLoader {
       const name = path.relative(rootPath, controllerPath);
       controllers.set(name, mod);
     }
-    AnyLogger.debug(controllers.keys());
+    WenLogger.debug(controllers.keys());
   }
 }

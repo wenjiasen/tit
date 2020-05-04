@@ -6,11 +6,11 @@ const CONFIG_DIR = process.env.ANYAPI_CONFIG_DIR || DEFAULT_DIR;
 
 export class ConfigLoader {
   public readonly root: string;
-  private readonly defaultConfig: AnyTypes.IConfig = { port: 80 };
+  private readonly defaultConfig: WenTypes.IConfig = { port: 80 };
   constructor(root?: string) {
     this.root = root || CONFIG_DIR;
   }
-  public async load(): Promise<AnyTypes.IConfig> {
+  public async load(): Promise<WenTypes.IConfig> {
     const filePath = path.resolve(appRootPath.path, `${this.root}`);
     const data = await require(filePath);
     return Object.assign(this.defaultConfig, data);

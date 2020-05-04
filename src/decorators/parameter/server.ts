@@ -1,9 +1,9 @@
 import { PARAMETER_SERVER_METADATA } from '../constants';
-import { AnyServer } from '../../server';
-import { AnyContext } from '../../context';
+import { WenServer } from '../../server';
+import { WenContext } from '../../context';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-type TServerConstructor = new (ctx: AnyContext) => AnyServer;
+type TServerConstructor = new (ctx: WenContext) => WenServer;
 
 export type ParameterRouterServerMetaData = {
   index: number;

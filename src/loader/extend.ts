@@ -1,9 +1,9 @@
 import appRootPath from 'app-root-path';
 import path from 'path';
-import { IAnyApplication } from '..';
-import { AnyLogger } from '../logger';
+import { IWenApplication } from '..';
+import { WenLogger } from '../logger';
 import { walkDirectory } from './util';
-import { AnyExtend } from '../extend';
+import { WenExtend } from '../extend';
 
 let extendDir = './src/extend';
 let ext = '.ts';
@@ -20,21 +20,21 @@ export class ExtendLoader {
     this.root = root || CONFIG_DIR;
   }
 
-  public async load(app: IAnyApplication): Promise<void> {
+  public async load(app: IWenApplication): Promise<void> {
     const rootPath = path.resolve(appRootPath.path, this.root);
     const files = walkDirectory(rootPath).filter((file) => {
       return path.extname(file).toLowerCase() === ext;
     });
-    const modules = new Map<string, AnyExtend>();
+    const modules = new Map<string, WenExtend>();
     for (const file of files) {
       const modulePath = `${file}`;
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const mod = require(modulePath);
       const name = path.relative(rootPath, modulePath);
-      const instance: AnyExtend = new mod.default();
+      const instance: WenExtend = new mod.default();
       instance.reduce(app);
       modules.set(name, instance);
     }
-    AnyLogger.debug(modules.keys());
+    WenLogger.debug(modules.keys());
   }
 }

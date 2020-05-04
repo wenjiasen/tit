@@ -1,5 +1,5 @@
-import { AnyContext } from './context';
+import { WenContext } from './context';
 
-export class AnyServer {
-  constructor(protected readonly ctx: AnyContext) {}
+export class WenServer {
+  constructor(protected readonly ctx: WenContext) {}
 }

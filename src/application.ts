@@ -3,24 +3,24 @@ import koaCompress from 'koa-compress';
 import koaJson from 'koa-json';
 import koaBodyParser from 'koa-bodyparser';
 
-import { AnyLogger, AnyRouter } from '.';
+import { WenLogger, WenRouter } from '.';
 
-export interface IAnyApplication {
-  config: AnyTypes.IConfig;
-  readonly router: AnyRouter;
+export interface IWenApplication {
+  config: WenTypes.IConfig;
+  readonly router: WenRouter;
   koaApp: koa;
   run: () => void;
 }
 
 //TODO:解决扩展后的编译问题
-export class AnyApplication {
-  public config!: AnyTypes.IConfig;
-  public readonly router: AnyRouter = new AnyRouter();
+export class WenApplication {
+  public config!: WenTypes.IConfig;
+  public readonly router: WenRouter = new WenRouter();
   public koaApp!: koa;
   constructor() {
     this.koaApp = new koa();
     process.on('uncaughtException', (e) => {
-      AnyLogger.error(e);
+      WenLogger.error(e);
     });
 
     // TODO:错误处理
@@ -38,7 +38,7 @@ export class AnyApplication {
 
   run(): void {
     this.koaApp.listen(this.config.port, () => {
-      AnyLogger.info(`app listen port:${this.config.port}`);
+      WenLogger.info(`app listen port:${this.config.port}`);
     });
   }
 }

@@ -1,23 +1,23 @@
-import { IAnyApplication, AnyApplication, AnyRouter } from '..';
+import { IWenApplication, WenApplication, WenRouter } from '..';
 import { ConfigLoader, ControllerLoader, ExtendLoader } from '../loader';
 
-async function loaderConfig(app: IAnyApplication): Promise<void> {
+async function loaderConfig(app: IWenApplication): Promise<void> {
   const loader = new ConfigLoader();
   app.config = await loader.load();
 }
 
-async function loaderController(app: IAnyApplication): Promise<void> {
+async function loaderController(app: IWenApplication): Promise<void> {
   const loader = new ControllerLoader();
   await loader.load(app);
 }
 
-async function loaderExtends(app: IAnyApplication): Promise<void> {
+async function loaderExtends(app: IWenApplication): Promise<void> {
   const loader = new ExtendLoader();
   await loader.load(app);
 }
 
-function getHealthRouter(): AnyRouter {
-  const router = new AnyRouter();
+function getHealthRouter(): WenRouter {
+  const router = new WenRouter();
   router.get('/_health', async (ctx) => {
     ctx.body = {
       message: 'ok',
@@ -28,10 +28,10 @@ function getHealthRouter(): AnyRouter {
 
 export class ApplicationFactory {
   /**
-   * crate an IAnyApplication instance
+   * crate an Application instance
    */
-  public static async create(): Promise<IAnyApplication> {
-    const app = new AnyApplication();
+  public static async create(): Promise<IWenApplication> {
+    const app = new WenApplication();
     global.__app__ = app;
 
     // config

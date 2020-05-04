@@ -14,9 +14,9 @@ import {
   METHOD_ROUTER_METADATA,
 } from '../constants';
 import Joi from '@hapi/joi';
-import { AnyContext } from '../../context';
-import { IAnyApplication } from '../..';
-import { AnyMiddleware } from '../../router';
+import { WenContext } from '../../context';
+import { IWenApplication } from '../..';
+import { WenMiddleware } from '../../router';
 import { ClassControllerMetaData } from '../class';
 
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
@@ -56,7 +56,7 @@ type RouterData = {
 export type MethodRouterMetaData = {
   path: RouterPath;
   method: HttpMethod;
-  middleware?: AnyMiddleware[];
+  middleware?: WenMiddleware[];
 };
 function scanTargetMetaData(target: any, propertyName: string): RouterData {
   const queryMeta: ParameterRouterQueryMetaData[] = Reflect.getOwnMetadata(PARAMETER_QUERY_METADATA, target, propertyName) || [];
@@ -86,7 +86,7 @@ function joiCheck(metadata: ParameterRouterQueryMetaData[], paramNames: string[]
   return Joi.object(schemaMap).validate(needValidData);
 }
 
-function getRouterParams(ctx: AnyContext, paramNames: string[], metadata: ParameterRouterParamMetaData[]): Record<number, any> {
+function getRouterParams(ctx: WenContext, paramNames: string[], metadata: ParameterRouterParamMetaData[]): Record<number, any> {
   const { error, value } = joiCheck(metadata, paramNames, ctx._ctx.params);
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
@@ -97,7 +97,7 @@ function getRouterParams(ctx: AnyContext, paramNames: string[], metadata: Parame
   return result;
 }
 
-function getRouterQuery(ctx: AnyContext, paramNames: string[], metadata: ParameterRouterQueryMetaData[]): Record<number, any> {
+function getRouterQuery(ctx: WenContext, paramNames: string[], metadata: ParameterRouterQueryMetaData[]): Record<number, any> {
   const { error, value } = joiCheck(metadata, paramNames, ctx._ctx.query);
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
@@ -108,7 +108,7 @@ function getRouterQuery(ctx: AnyContext, paramNames: string[], metadata: Paramet
   return result;
 }
 
-function getRouterBody(ctx: AnyContext, metadata: ParameterRouterBodyMetaData): Record<number, any> {
+function getRouterBody(ctx: WenContext, metadata: ParameterRouterBodyMetaData): Record<number, any> {
   const { error, value } = Joi.object(metadata.schemaMap).validate(ctx._ctx.request.body);
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
@@ -116,7 +116,7 @@ function getRouterBody(ctx: AnyContext, metadata: ParameterRouterBodyMetaData): 
   return result;
 }
 
-function getServer(ctx: AnyContext, metadata: ParameterRouterServerMetaData[]): Record<number, any> {
+function getServer(ctx: WenContext, metadata: ParameterRouterServerMetaData[]): Record<number, any> {
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
     const instance = new item.contructor(ctx);
@@ -135,15 +135,15 @@ function map2Array(obj: Record<number, any>): any[] {
 }
 
 type RouterPath = string | RegExp | (string | RegExp)[];
-export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?: AnyMiddleware[] }) {
+export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?: WenMiddleware[] }) {
   return function(target: any, propertyName: string, descriptor: TypedPropertyDescriptor<any>): void {
     const method = descriptor.value as Function;
     const paramNames = getParamNames(method);
 
-    const app = global.__app__ as IAnyApplication;
+    const app = global.__app__ as IWenApplication;
     const metadata = scanTargetMetaData(target, propertyName);
 
-    descriptor.value = async function(ctx: AnyContext, next: Next): Promise<void> {
+    descriptor.value = async function(ctx: WenContext, next: Next): Promise<void> {
       // 处理query
       let params = {} as Record<string, any>;
 
