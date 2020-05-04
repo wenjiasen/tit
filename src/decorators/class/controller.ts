@@ -1,15 +1,15 @@
 import { CLASS_CONTROLLER_METADATA, METHOD_ROUTER_METADATA } from '../constants';
-import { IWenApplication, MethodRouterMetaData, WenMiddleware, WenContext } from '../..';
-import { Context, Next } from 'koa';
+import { IApplication, MethodRouterMetaData, TitMiddleware, Context } from '../..';
+import { Context as koaContext, Next } from 'koa';
 import { IRouterContext } from 'koa-router';
 
 export type ClassControllerMetaData = {
   routerPropertyName: string[];
 };
 
-function mergeContext(handle: Function): WenMiddleware {
-  return async (ctx: Context, next: Next): Promise<void> => {
-    const anyContext = new WenContext(ctx as IRouterContext);
+function mergeContext(handle: Function): TitMiddleware {
+  return async (ctx: koaContext, next: Next): Promise<void> => {
+    const anyContext = new Context(ctx as IRouterContext);
     await handle.apply(
       {
         ctx: anyContext,
@@ -22,7 +22,7 @@ function mergeContext(handle: Function): WenMiddleware {
 export function Controller(ops: { prefix?: string } = {}) {
   return function(target: any): void {
     const metadata: ClassControllerMetaData | undefined = Reflect.getMetadata(CLASS_CONTROLLER_METADATA, target);
-    const app = global.__app__ as IWenApplication;
+    const app = global.__app__ as IApplication;
     metadata?.routerPropertyName?.forEach((routerName) => {
       const routerMetadata: MethodRouterMetaData = Reflect.getMetadata(METHOD_ROUTER_METADATA, target, routerName);
       const middlewares = routerMetadata.middleware || [];

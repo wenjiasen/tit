@@ -1,7 +1,7 @@
-import { WenContext } from './context';
-import { IWenApplication } from './application';
+import { Context } from './context';
+import { IApplication } from './application';
 
-export class WenController {
-  protected readonly ctx!: WenContext;
-  protected readonly app!: IWenApplication;
+export interface IController {
+  readonly ctx: Context;
+  readonly app: IApplication;
 }

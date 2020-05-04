@@ -1,23 +1,23 @@
-import { IWenApplication, WenApplication, WenRouter } from '..';
+import { IApplication, Application, TitRouter } from '..';
 import { ConfigLoader, ControllerLoader, ExtendLoader } from '../loader';
 
-async function loaderConfig(app: IWenApplication): Promise<void> {
+async function loaderConfig(app: IApplication): Promise<void> {
   const loader = new ConfigLoader();
   app.config = await loader.load();
 }
 
-async function loaderController(app: IWenApplication): Promise<void> {
+async function loaderController(app: IApplication): Promise<void> {
   const loader = new ControllerLoader();
   await loader.load(app);
 }
 
-async function loaderExtends(app: IWenApplication): Promise<void> {
+async function loaderExtends(app: IApplication): Promise<void> {
   const loader = new ExtendLoader();
   await loader.load(app);
 }
 
-function getHealthRouter(): WenRouter {
-  const router = new WenRouter();
+function getHealthRouter(): TitRouter {
+  const router = new TitRouter();
   router.get('/_health', async (ctx) => {
     ctx.body = {
       message: 'ok',
@@ -30,8 +30,8 @@ export class ApplicationFactory {
   /**
    * crate an Application instance
    */
-  public static async create(): Promise<IWenApplication> {
-    const app = new WenApplication();
+  public static async create(): Promise<IApplication> {
+    const app = new Application();
     global.__app__ = app;
 
     // config

@@ -1,5 +1,5 @@
-import { WenContext } from './context';
+import { Context } from './context';
 
-export class WenServer {
-  constructor(protected readonly ctx: WenContext) {}
+export interface IServer {
+  readonly ctx: Context;
 }

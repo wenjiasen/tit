@@ -1,4 +1,4 @@
-declare namespace WenTypes {
+declare namespace TitTypes {
   interface IConfig {
     port: number;
   }
