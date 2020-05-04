@@ -1,0 +1,54 @@
+{
+  "name": "wenjs",
+  "version": "0.1.0",
+  "description": "A simple api framework by use TypeScript & Node.js",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "npm run clean && tsc --build ./tsconfig.build.json",
+    "clean": "rm -rf ./dist/*",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "patch": "npm run build && npm version patch && npm publish",
+    "minor": "npm run build && npm version minor && npm publish",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason W",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^10.17.16",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "prettier": "^1.19.1",
+    "ts-node": "^6.2.0",
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "@types/app-root-path": "^1.2.4",
+    "@types/hapi__joi": "^16.0.12",
+    "@types/http-errors": "^1.6.3",
+    "@types/koa": "^2.11.0",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-compress": "^2.0.9",
+    "@types/koa-json": "^2.0.18",
+    "@types/koa-router": "^7.0.42",
+    "@types/node-fetch": "^2.5.5",
+    "@types/source-map-support": "^0.5.0",
+    "@types/uuid": "^7.0.2",
+    "app-root-path": "^3.0.0",
+    "http-errors": "^1.7.3",
+    "koa": "^2.11.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-compress": "^3.0.0",
+    "koa-json": "^2.0.2",
+    "koa-router": "^7.4.0",
+    "node-fetch": "^2.6.0",
+    "reflect-metadata": "^0.1.13",
+    "source-map-support": "^0.5.16",
+    "uuid": "^7.0.2"
+  }
+}
