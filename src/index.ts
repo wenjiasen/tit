@@ -1,9 +1,7 @@
 export * from './application';
 export * from './lib';
-export * from './decorators';
 export * from './factory';
 export * from './logger';
-
 export * from './router';
 export * from './context';
 export * from './controller';

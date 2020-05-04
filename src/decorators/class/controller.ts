@@ -1,7 +1,8 @@
 import { CLASS_CONTROLLER_METADATA, METHOD_ROUTER_METADATA } from '../constants';
-import { IApplication, MethodRouterMetaData, TitMiddleware, Context } from '../..';
+import { IApplication, TitMiddleware, Context } from '../..';
 import { Context as koaContext, Next } from 'koa';
 import { IRouterContext } from 'koa-router';
+import { MethodRouterMetaData } from '..';
 
 export type ClassControllerMetaData = {
   routerPropertyName: string[];
