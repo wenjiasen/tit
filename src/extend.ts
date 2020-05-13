@@ -1,5 +1,5 @@
-import { IApplication } from '.';
+import { Application } from '.';
 
 export interface IExtend {
-  reduce: (app: IApplication) => void;
+  reduce: (app: Application) => void;
 }

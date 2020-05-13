@@ -1,39 +1,35 @@
 import { CLASS_CONTROLLER_METADATA, METHOD_ROUTER_METADATA } from '../constants';
-import { IApplication, TitMiddleware, Context } from '../..';
-import { Context as koaContext, Next } from 'koa';
-import { IRouterContext } from 'koa-router';
 import { MethodRouterMetaData } from '..';
+import { Next, Middleware, ParameterizedContext } from 'koa';
+import { Application } from '../..';
 
 export type ClassControllerMetaData = {
   routerPropertyName: string[];
 };
-
-function mergeContext(handle: Function): TitMiddleware {
-  return async (ctx: koaContext, next: Next): Promise<void> => {
-    const anyContext = new Context(ctx as IRouterContext);
+function mergeContext<StateT, CustomT>(handle: Function): Middleware<StateT, CustomT> {
+  return async (ctx: ParameterizedContext<StateT, CustomT>, next: Next): Promise<void> => {
     await handle.apply(
       {
-        ctx: anyContext,
+        ctx,
       },
-      [anyContext, next],
+      [ctx, next],
     );
   };
 }
-
 export function Controller(ops: { prefix?: string } = {}) {
   return function(target: any): void {
     const metadata: ClassControllerMetaData | undefined = Reflect.getMetadata(CLASS_CONTROLLER_METADATA, target);
-    const app = global.__app__ as IApplication;
+    const app = global.__app__ as Application;
     metadata?.routerPropertyName?.forEach((routerName) => {
       const routerMetadata: MethodRouterMetaData = Reflect.getMetadata(METHOD_ROUTER_METADATA, target, routerName);
-      const middlewares = routerMetadata.middleware || [];
+      const middleware = routerMetadata.middleware || [];
       const handleMiddleware = mergeContext(target.prototype[routerName]);
-      middlewares.push(handleMiddleware);
+      middleware.push(handleMiddleware);
       let routerPath = routerMetadata.path;
       if (ops?.prefix) {
         routerPath = `${ops?.prefix}${routerPath}`;
       }
-      app.router[routerMetadata.method](routerPath, ...middlewares);
+      app.rootRouter[routerMetadata.method](routerPath, ...middleware);
     });
   };
 }

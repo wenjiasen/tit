@@ -1,9 +1,9 @@
-import { IContext } from './context';
+import { Context } from 'koa';
 
 export interface IServer {
-  readonly ctx: IContext;
+  readonly ctx: Context;
 }
 
 export class TitServer implements IServer {
-  constructor(readonly ctx: IContext) {}
+  constructor(readonly ctx: Context) {}
 }

@@ -1,30 +1,43 @@
 import appRootPath from 'app-root-path';
 import path from 'path';
-import { IApplication } from '..';
+import { Application } from '..';
+import fs from 'fs';
 import { TitLogger } from '../logger';
 import { walkDirectory } from './util';
 import { IExtend } from '../extend';
 
-let extendDir = './src/extend';
-let ext = '.ts';
-if (process.env.NODE_ENV === 'production') {
-  extendDir = './dist/extend';
-  ext = '.js';
-}
-const DEFAULT_DIR = path.resolve(appRootPath.path, extendDir);
-const CONFIG_DIR = process.env.ANYAPI_EXTEND_DIR || DEFAULT_DIR;
-
 export class ExtendLoader {
   public readonly root: string;
   constructor(root?: string) {
-    this.root = root || CONFIG_DIR;
+    const rootPath = root || this.getRoot();
+    this.root = rootPath;
   }
 
-  public async load(app: IApplication): Promise<void> {
-    const rootPath = path.resolve(appRootPath.path, this.root);
+  private getRoot(): string {
+    let controllerDir = './src/extend';
+    if (process.env.NODE_ENV === 'production') {
+      controllerDir = './dist/extend';
+    }
+    const DEFAULT_DIR = path.resolve(appRootPath.path, controllerDir);
+    const CONFIG_DIR = process.env.TIT_EXTEND_DIR || DEFAULT_DIR;
+    return CONFIG_DIR;
+  }
+
+  private getFiles(rootPath: string): string[] {
     const files = walkDirectory(rootPath).filter((file) => {
-      return path.extname(file).toLowerCase() === ext;
+      return !/(.ts|.map)$/.test(file);
     });
+
+    return [...new Set(files)];
+  }
+
+  public async load(app: Application): Promise<void> {
+    const rootPath = path.resolve(appRootPath.path, this.root);
+    if (!fs.existsSync(rootPath)) {
+      TitLogger.warn(`Not exists controller directory '${rootPath}'`);
+      return;
+    }
+    const files = this.getFiles(rootPath);
     const modules = new Map<string, IExtend>();
     for (const file of files) {
       const modulePath = `${file}`;

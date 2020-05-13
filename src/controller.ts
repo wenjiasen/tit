@@ -1,12 +1,11 @@
-import { IContext } from './context';
-import { IApplication } from './application';
-
+import { Application } from './application';
+import { Context } from 'koa';
 export interface IController {
-  readonly ctx: IContext;
-  readonly app: IApplication;
+  readonly ctx: Context;
+  readonly app: Application;
 }
 
 export class TitController implements IController {
-  readonly ctx!: IContext;
-  readonly app!: IApplication;
+  readonly ctx!: Context;
+  readonly app!: Application;
 }

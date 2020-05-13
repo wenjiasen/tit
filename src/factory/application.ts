@@ -1,17 +1,17 @@
-import { IApplication, Application, TitRouter } from '..';
+import { Application, TitRouter } from '..';
 import { ConfigLoader, ControllerLoader, ExtendLoader } from '../loader';
 
-async function loaderConfig(app: IApplication): Promise<void> {
+async function loaderConfig(app: Application): Promise<void> {
   const loader = new ConfigLoader();
   app.config = await loader.load();
 }
 
-async function loaderController(app: IApplication): Promise<void> {
+async function loaderController(app: Application): Promise<void> {
   const loader = new ControllerLoader();
   await loader.load(app);
 }
 
-async function loaderExtends(app: IApplication): Promise<void> {
+async function loaderExtends(app: Application): Promise<void> {
   const loader = new ExtendLoader();
   await loader.load(app);
 }
@@ -30,7 +30,7 @@ export class ApplicationFactory {
   /**
    * crate an Application instance
    */
-  public static async create(): Promise<IApplication> {
+  public static async create(): Promise<Application> {
     const app = new Application();
     global.__app__ = app;
 
@@ -46,7 +46,7 @@ export class ApplicationFactory {
     // router
     // health check
     const healthRouter = getHealthRouter();
-    app.koaApp.use(healthRouter.routes());
+    app.use(healthRouter.routes());
 
     return app;
   }

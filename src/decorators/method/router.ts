@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpMethod } from '../../lib/enumerate';
-import { Next } from 'koa';
+import Application, { Next, Context } from 'koa';
 import { ParameterRouterQueryMetaData } from '../parameter/query';
 import { ParameterRouterParamMetaData } from '../parameter/param';
 import { ParameterRouterBodyMetaData } from '../parameter/body';
@@ -14,8 +14,6 @@ import {
   METHOD_ROUTER_METADATA,
 } from '../constants';
 import Joi from '@hapi/joi';
-import { Context } from '../../context';
-import { IApplication } from '../..';
 import { TitMiddleware } from '../../router';
 import { ClassControllerMetaData } from '../class';
 
@@ -119,7 +117,7 @@ function getRouterBody(ctx: Context, metadata: ParameterRouterBodyMetaData): Rec
 function getServer(ctx: Context, metadata: ParameterRouterServerMetaData[]): Record<number, any> {
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
-    const instance = new item.contructor(ctx);
+    const instance = new item.constructor(ctx);
     result[item.index] = instance;
   }
   return result;
@@ -140,7 +138,7 @@ export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?:
     const method = descriptor.value as Function;
     const paramNames = getParamNames(method);
 
-    const app = global.__app__ as IApplication;
+    const app = global.__app__ as Application;
     const metadata = scanTargetMetaData(target, propertyName);
 
     descriptor.value = async function(ctx: Context, next: Next): Promise<void> {
