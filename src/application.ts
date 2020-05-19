@@ -7,11 +7,16 @@ import koaBodyParser from 'koa-bodyparser';
 declare module 'koa' {
   interface Context {
     app: Application;
+    config: IConfig;
   }
 }
 
+export interface IConfig {
+  port: number;
+}
+
 export class Application extends koa {
-  public config!: TitTypes.IConfig;
+  public config!: IConfig;
   public rootRouter = new koaRouter();
   constructor() {
     super();

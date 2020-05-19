@@ -1,9 +1,10 @@
 import appRootPath from 'app-root-path';
 import path from 'path';
+import { IConfig } from '..';
 
 export class ConfigLoader {
   public readonly root: string;
-  private readonly defaultConfig: TitTypes.IConfig = { port: 80 };
+  private readonly defaultConfig: IConfig = { port: 80 };
   constructor(root?: string) {
     this.root = root || this.getRoot();
   }
@@ -14,7 +15,7 @@ export class ConfigLoader {
     return CONFIG_DIR;
   }
 
-  public async load(): Promise<TitTypes.IConfig> {
+  public async load(): Promise<IConfig> {
     const filePath = path.resolve(appRootPath.path, `${this.root}`);
     const data = await require(filePath);
     return Object.assign(this.defaultConfig, data);
