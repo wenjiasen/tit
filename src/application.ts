@@ -15,8 +15,12 @@ export interface IConfig {
   port: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IExtend {}
+
 export class Application extends koa {
   public config!: IConfig;
+  public extend!: IExtend;
   public rootRouter = new koaRouter();
   constructor() {
     super();
