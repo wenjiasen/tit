@@ -24,6 +24,8 @@ export class Application extends koa {
   public rootRouter = new koaRouter();
   constructor() {
     super();
+    this.rootScope = {};
+
     process.on('uncaughtException', (e) => {
       // TitLogger.error(e);
     });
