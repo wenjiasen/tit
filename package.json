@@ -1,6 +1,6 @@
 {
   "name": "tit",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "A simple api framework by use TypeScript & Node.js",
   "main": "./dist/index.js",
   "scripts": {
