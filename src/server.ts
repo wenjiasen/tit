@@ -1,9 +1,9 @@
-import koa from 'koa';
+import { Application } from './application';
 
 export interface IServer {
-  readonly app: koa;
+  readonly app: Application;
 }
 
 export class TitServer implements IServer {
-  constructor(readonly app: koa) {}
+  constructor(readonly app: Application) {}
 }
