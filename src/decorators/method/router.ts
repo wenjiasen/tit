@@ -117,7 +117,7 @@ function getRouterBody(ctx: Context, metadata: ParameterRouterBodyMetaData): Rec
 function getServer(ctx: Context, metadata: ParameterRouterServerMetaData[]): Record<number, any> {
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
-    const instance = new item.constructor(ctx);
+    const instance = new item.constructor(ctx.app);
     result[item.index] = instance;
   }
   return result;

@@ -1,9 +1,9 @@
-import { Context } from 'koa';
+import koa from 'koa';
 
 export interface IServer {
-  readonly ctx: Context;
+  readonly app: koa;
 }
 
 export class TitServer implements IServer {
-  constructor(readonly ctx: Context) {}
+  constructor(readonly app: koa) {}
 }

@@ -1,9 +1,9 @@
 import { PARAMETER_SERVER_METADATA } from '../constants';
 import { IServer } from '../../server';
-import { Context } from 'koa';
+import koa from 'koa';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-type TServerConstructor = new (ctx: Context) => IServer;
+type TServerConstructor = new (ctx: koa) => IServer;
 
 export type ParameterRouterServerMetaData = {
   index: number;
