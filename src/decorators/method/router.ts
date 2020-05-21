@@ -85,7 +85,7 @@ function joiCheck(metadata: ParameterRouterQueryMetaData[], paramNames: string[]
 }
 
 function getRouterParams(ctx: Context, paramNames: string[], metadata: ParameterRouterParamMetaData[]): Record<number, any> {
-  const { error, value } = joiCheck(metadata, paramNames, ctx._ctx.params);
+  const { error, value } = joiCheck(metadata, paramNames, ctx.params);
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
@@ -96,7 +96,7 @@ function getRouterParams(ctx: Context, paramNames: string[], metadata: Parameter
 }
 
 function getRouterQuery(ctx: Context, paramNames: string[], metadata: ParameterRouterQueryMetaData[]): Record<number, any> {
-  const { error, value } = joiCheck(metadata, paramNames, ctx._ctx.query);
+  const { error, value } = joiCheck(metadata, paramNames, ctx.query);
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
@@ -107,7 +107,7 @@ function getRouterQuery(ctx: Context, paramNames: string[], metadata: ParameterR
 }
 
 function getRouterBody(ctx: Context, metadata: ParameterRouterBodyMetaData): Record<number, any> {
-  const { error, value } = Joi.object(metadata.schemaMap).validate(ctx._ctx.request.body);
+  const { error, value } = Joi.object(metadata.schemaMap).validate(ctx.request.body);
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   result[metadata.index] = value;
