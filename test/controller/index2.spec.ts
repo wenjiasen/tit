@@ -2,7 +2,7 @@ import { TitController, Controller, Router, HttpMethod, PServer } from '../../sr
 import { IndexServer } from '../server/index.spec';
 
 @Controller({
-  prefix: '/test',
+  prefix: '/test/2',
 })
 export class IndexController extends TitController {
   @Router({ path: '/', method: HttpMethod.GET })
@@ -12,10 +12,9 @@ export class IndexController extends TitController {
   }
 
   @Router({ path: '/path', method: HttpMethod.GET })
-  public async getPath(@PServer(IndexServer) indexServer: IndexServer): Promise<void> {
+  public async getPath(): Promise<void> {
     const { ctx } = this;
-    const path = await indexServer.getContext();
-    ctx.body = `${ctx.method} ${path}`;
+    ctx.body = `${ctx.method} ${ctx.path}`;
   }
 
   @Router({
