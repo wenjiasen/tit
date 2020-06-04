@@ -107,10 +107,20 @@ function getRouterQuery(ctx: Context, paramNames: string[], metadata: ParameterR
 }
 
 function getRouterBody(ctx: Context, metadata: ParameterRouterBodyMetaData): Record<number, any> {
-  const { error, value } = Joi.object(metadata.schemaMap).validate(ctx.request.body);
+  let body = ctx.request.body;
+  if (metadata.isOnlyRoot) {
+    body = {
+      root: ctx.request.body,
+    };
+  }
+  const { error, value } = Joi.object(metadata.schemaMap).validate(body);
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
-  result[metadata.index] = value;
+  if (metadata.isOnlyRoot) {
+    result[metadata.index] = value['root'];
+  } else {
+    result[metadata.index] = value;
+  }
   return result;
 }
 

@@ -1,5 +1,6 @@
-import { TitController, Controller, Router, HttpMethod, PServer } from '../../src';
+import { TitController, Controller, Router, HttpMethod, PServer, PBody, PBodyRootArray } from '../../src';
 import { IndexServer } from '../server/index.spec';
+import Joi from '@hapi/joi';
 
 @Controller({
   prefix: '/test',
@@ -25,5 +26,30 @@ export class IndexController extends TitController {
     const { ctx } = this;
     const config = await indexServer.getConfig();
     ctx.body = config;
+  }
+
+  @Router({
+    path: '/create',
+    method: HttpMethod.POST,
+  })
+  public async create(@PBodyRootArray(Joi.array().required()) body: string[]): Promise<void> {
+    const { ctx } = this;
+    ctx.body = body;
+  }
+
+  @Router({
+    path: '/create/user',
+    method: HttpMethod.POST,
+  })
+  public async createUser(
+    @PBody({
+      name: Joi.string().required(),
+    })
+    body: {
+      name: string;
+    },
+  ): Promise<void> {
+    const { ctx } = this;
+    ctx.body = body;
   }
 }
