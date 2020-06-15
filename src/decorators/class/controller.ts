@@ -37,18 +37,17 @@ export function Controller(ops: { prefix?: string } = {}) {
       const middleware = routerMetadata.middleware || [];
       const handleMiddleware = mergeContext(target.prototype[routerName]);
       middleware.push(handleMiddleware);
-      let routerPath = routerMetadata.path;
-      if (ops?.prefix) {
-        routerPath = `${ops?.prefix}${routerPath}`;
-      }
-      if (checkDuplicatePath(routerPath.toString(), routerMetadata.method, app.rootRouter)) {
-        console.error(new Error(`Duplicate router path: "${routerPath}"`).stack);
-        process.exit();
-      }
-      app.rootRouter.stack.forEach((item) => {
-        item.path;
+      const routerPaths = Array.isArray(routerMetadata.path) ? routerMetadata.path : [routerMetadata.path];
+      routerPaths.forEach((routerPath) => {
+        if (ops?.prefix) {
+          routerPath = `${ops?.prefix}${routerPath}`;
+        }
+        if (checkDuplicatePath(routerPath.toString(), routerMetadata.method, app.rootRouter)) {
+          console.error(new Error(`Duplicate router path: "${routerPath}"`).stack);
+          process.exit();
+        }
+        app.rootRouter[routerMetadata.method](routerPath, ...middleware);
       });
-      app.rootRouter[routerMetadata.method](routerPath, ...middleware);
     });
   };
 }
