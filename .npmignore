@@ -6,3 +6,5 @@ tslint.json
 .prettierrc
 .travis.yml
 node_modules
+.vscode
+.github
