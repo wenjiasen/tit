@@ -115,9 +115,9 @@ function isObject(object: Record<string, any>): boolean {
   }
 }
 
-function filterNullOrUndefinedProperty(params: Record<string, any>): Record<string, any> {
-  const data: Record<string, any> = {};
-  if (params) {
+function filterNullOrUndefinedProperty(params: Record<string, any>): any {
+  if (params && isObject(params)) {
+    const data: Record<string, any> = {};
     Reflect.ownKeys(params).forEach((name) => {
       let temp = params[name as string];
       if (temp !== null && temp !== undefined) {
@@ -129,9 +129,11 @@ function filterNullOrUndefinedProperty(params: Record<string, any>): Record<stri
         // 判断
         data[name as string] = temp;
       }
+      return data;
     });
+  } else {
+    return params;
   }
-  return data;
 }
 
 function getRouterBody(ctx: Context, metadata: ParameterRouterBodyMetaData): Record<number, any> {
