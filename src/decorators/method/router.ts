@@ -129,8 +129,8 @@ function filterNullOrUndefinedProperty(params: Record<string, any>): any {
         // 判断
         data[name as string] = temp;
       }
-      return data;
     });
+    return data;
   } else {
     return params;
   }
