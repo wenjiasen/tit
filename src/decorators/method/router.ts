@@ -106,8 +106,36 @@ function getRouterQuery(ctx: Context, paramNames: string[], metadata: ParameterR
   return result;
 }
 
+function isObject(object: Record<string, any>): boolean {
+  try {
+    const keys = Reflect.ownKeys(object);
+    return !!keys.length;
+  } catch (error) {
+    return false;
+  }
+}
+
+function filterNullOrUndefinedProperty(params: Record<string, any>): Record<string, any> {
+  const data: Record<string, any> = {};
+  if (params) {
+    Reflect.ownKeys(params).forEach((name) => {
+      let temp = params[name as string];
+      if (temp !== null && temp !== undefined) {
+        if (Array.isArray(temp)) {
+          temp = temp.map((i) => filterNullOrUndefinedProperty(i));
+        } else if (isObject(temp)) {
+          temp = filterNullOrUndefinedProperty(temp);
+        }
+        // 判断
+        data[name as string] = temp;
+      }
+    });
+  }
+  return data;
+}
+
 function getRouterBody(ctx: Context, metadata: ParameterRouterBodyMetaData): Record<number, any> {
-  let body = ctx.request.body;
+  let body = filterNullOrUndefinedProperty(ctx.request.body);
   if (metadata.isOnlyRoot) {
     body = {
       root: ctx.request.body,
