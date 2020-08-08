@@ -9,7 +9,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "patch": "npm run build && npm version patch && npm publish",
     "minor": "npm run build && npm version minor && npm publish",
-    "test": ""
+    "test": "jest"
   },
   "author": "Jason W",
   "license": "MIT",
@@ -17,11 +17,17 @@
     "access": "public"
   },
   "devDependencies": {
+    "@babel/core": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/jest": "^26.0.7",
     "@types/node": "^10.17.16",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
+    "babel-jest": "^26.1.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
+    "jest": "^26.1.0",
     "prettier": "^1.19.1",
     "ts-node": "^6.2.0",
     "typescript": "^3.7.2"
