@@ -23,6 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        shell: bash
       - uses: actions/setup-node@v1
         with:
           node-version: 12
@@ -32,8 +36,8 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
       - run: npm ci
-      - run: npm build
-      - run: npm test
-      - run: npm publish
+      - run: npm run build
+      - run: npm version ${{ steps.get_version.outputs.VERSION }}
+      - run: npm publish --tag ${{ steps.get_version.outputs.VERSION }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
