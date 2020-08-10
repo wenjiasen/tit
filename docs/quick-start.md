@@ -14,6 +14,7 @@ import { ApplicationFactory } from 'tit';
 
 async function main(): Promise<void> {
   const app = await ApplicationFactory.create();
+  app.use(app.rootRouter());
   app.listen();
 }
 
