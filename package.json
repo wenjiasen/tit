@@ -7,7 +7,8 @@
     "build": "npm run clean && tsc --build ./tsconfig.build.json",
     "clean": "rm -rf ./dist/*",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "test": "jest"
+    "test": "jest",
+    "doc-serve": "docsify serve "
   },
   "author": "Jason W",
   "license": "MIT",
@@ -23,6 +24,7 @@
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "babel-jest": "^26.1.0",
+    "docsify-cli": "^4.4.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "jest": "^26.1.0",
