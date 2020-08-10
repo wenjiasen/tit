@@ -18,3 +18,13 @@ Application 是一个应用的主入口。
 
 如果要使用自定义的中间件，可以通过`app.use(middleware)`进行添加。
 
+> 注意：只能通过`ApplicationFactory.create`工厂函数生成`Application`实例，`new Application()`这样的操作是不允许的。
+
+## ApplicationFactory.create
+
+`ApplicationFactory.create`主要做了如下工作：
+
+1. `const app = new Application()`
+2. 加载配置，挂载至`app.config`
+3. 加载扩展
+4. 加载Controller
