@@ -8,7 +8,7 @@
     "clean": "rm -rf ./dist/*",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest",
-    "doc-serve": "docsify serve "
+    "doc-serve": "docsify serve ./docs"
   },
   "author": "Jason W",
   "license": "MIT",
