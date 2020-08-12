@@ -1,4 +1,4 @@
-- [简介](readme)
+- [简介](README)
 - [快速开始](quick-start)
 - [核心增强](core/index)
   - [Application](core/application)
