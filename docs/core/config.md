@@ -24,7 +24,7 @@ JSON:
 
 JS:
 
-```javascript
+```TypeScript
 module.exports = {
   port: 8080,
 };

@@ -8,7 +8,7 @@ npm i tit
 
 ## 快速开始
 
-```javascript
+```TypeScript
 // app.ts
 import { ApplicationFactory } from 'tit';
 

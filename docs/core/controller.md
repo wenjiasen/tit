@@ -14,7 +14,7 @@ Server 主要负责实际的业务逻辑处理，例如数据库操作等。[详
 
 一个简单的示例：
 
-```javascript
+```TypeScript
 import { TitController, Controller} from 'tit';
 
 @Controller({
