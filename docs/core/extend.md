@@ -4,7 +4,7 @@
 
 例如以下实现了将 MySQL 链接实例挂载到 `app.rootScope` 实例中，方便全局访问。
 
-```javascript
+```TypeScript
 
 import { IExtend, Application } from 'tit';
 import { createConnection, Connection } from 'typeorm';
@@ -54,7 +54,7 @@ export default class MysqlExtend implements IExtend {
 
 接口定义：
 
-```javascript
+```TypeScript
 interface IExtend {
   reduce: (app: Application) => void;
 }

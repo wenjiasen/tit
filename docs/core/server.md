@@ -10,7 +10,7 @@
 
 一个简单的示例：
 
-```javascript
+```TypeScript
 import { TitServer, Server} from 'tit';
 
 @Controller({

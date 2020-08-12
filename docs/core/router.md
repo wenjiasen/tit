@@ -1,10 +1,10 @@
 # 路由
 
-Tit 框架默认包含了[koa-router](https://github.com/ZijianHe/koa-router)，并且在构造创建一个 koa-router 实例`rootRouter`。
+Tit 框架默认包含了[koa-router](https://github.com/ZijianHe/koa-router)，并且在构造 Application 时会创建一个 koa-router 实例`rootRouter`。
 
 > 注意构造`Application`时不会自动把`rootRouter`加入到 middleware 调用链中，需要自己手动调用。例如：
 
-```javascript
+```TypeScript
 // ...
 const app = await ApplicationFactory.create();
 app.use(app.rootRouter());
@@ -20,12 +20,14 @@ Tit 提供了`@Router`用于注册路由，使用此装饰器的注册的路由�
 
 ### 定义一个路由
 
-以下代码定义了一个`/hello`的路由,通过此示例可以了解如何使用路由
+以下代码定义了一个`/api/hello`的路由,通过此示例可以了解如何使用路由
 
-```javascript
+```TypeScript
 import { TitController, Controller, Router, HttpMethod } from 'tit';
 
-@Controller({})
+@Controller({
+  prefix: '/api'
+})
 export class IndexController extends TitController {
   @Router({
     method: HttpMethod.GET,
@@ -40,15 +42,17 @@ export class IndexController extends TitController {
 
 ### 可选参数
 
-可以通过传入不通的参数控制`@Router`的行为。
+可以通过传入不同的参数控制`@Router`的行为。
 
 #### method
 
 必填，设置此路由可以通过何种`HTTP Method`进行调用.
+
 框架内部提供了`HttpMethod`枚举。
+
 示例：
 
-```javascript
+```TypeScript
 @Router({
     method: HttpMethod.GET
 })
@@ -59,7 +63,7 @@ export class IndexController extends TitController {
 必填，设置此路由的路径，路径规则与[koa-router](https://github.com/ZijianHe/koa-router)保持完全一致。具体规则查看[path-to-regexp](https://github.com/pillarjs/path-to-regexp)
 示例：
 
-```javascript
+```TypeScript
 @Router({
     path: '/hello'
 })
@@ -82,7 +86,7 @@ export class IndexController extends TitController {
 
 实际示例：
 
-```javascript
+```TypeScript
 @Router({
     middleware: [someMiddleware]
 })
@@ -100,7 +104,7 @@ export class IndexController extends TitController {
 
 示例：检查 url 中是否包含 id 参数。
 
-```javascript
+```TypeScript
     @Router({
       path: '/user/:id', // 注意此处的param参数":id"，必须和@PParam装饰的参数名保持一致
       method: HttpMethod.GET,
@@ -119,7 +123,7 @@ export class IndexController extends TitController {
 
 示例：检查 url query 中是否包含 id 参数。
 
-```javascript
+```TypeScript
     @Router({
       path: '/user', // 注意此处不需要特殊声明，实际请求时回从query中获取检查
       method: HttpMethod.GET,
@@ -138,7 +142,7 @@ export class IndexController extends TitController {
 
 示例：检查 body 中是否包含 name 参数。
 
-```javascript
+```TypeScript
     @Router({
       path: '/user',
       method: HttpMethod.POST,
@@ -161,7 +165,8 @@ export class IndexController extends TitController {
 为了方便 Controller 中使用`Server`实例，框架提供一个简单的 Server 注入装饰器`@PServer`
 
 使用示例：
-```javascript
+
+```TypeScript
     @Router({
       path: '/user',
       method: HttpMethod.POST,
