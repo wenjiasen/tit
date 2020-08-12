@@ -1,6 +1,6 @@
 - [简介](readme)
 - [快速开始](quick-start)
-- [核心增强](core/application)
+- [核心增强](core/index)
   - [Application](core/application)
   - [配置](core/config)
   - [扩展](core/extend)
