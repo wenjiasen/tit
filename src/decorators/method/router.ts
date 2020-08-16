@@ -81,7 +81,9 @@ function joiCheck(metadata: ParameterRouterQueryMetaData[], paramNames: string[]
     schemaMap[fieldName] = item.schema;
     needValidData[fieldName] = target[fieldName];
   }
-  return Joi.object(schemaMap).validate(needValidData);
+  return Joi.object(schemaMap).validate(needValidData, {
+    stripUnknown: true,
+  });
 }
 
 function getRouterParams(ctx: Context, paramNames: string[], metadata: ParameterRouterParamMetaData[]): Record<number, any> {
@@ -143,7 +145,7 @@ function getRouterBody(ctx: Context, metadata: ParameterRouterBodyMetaData): Rec
       root: ctx.request.body,
     };
   }
-  const { error, value } = Joi.object(metadata.schemaMap).validate(body);
+  const { error, value } = Joi.object(metadata.schemaMap).validate(body, { stripUnknown: true });
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   if (metadata.isOnlyRoot) {
