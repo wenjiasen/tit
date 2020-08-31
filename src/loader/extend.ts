@@ -25,7 +25,7 @@ export class ExtendLoader {
 
   private getFiles(rootPath: string): string[] {
     const files = walkDirectory(rootPath).filter((file) => {
-      return !/(.d.ts|.map)$/.test(file);
+      return !/(\.d.ts|.map)$/.test(file);
     });
 
     return [...new Set(files)];
