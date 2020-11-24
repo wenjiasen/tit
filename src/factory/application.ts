@@ -1,17 +1,23 @@
 import { Application, TitRouter } from '..';
 import { ConfigLoader, ControllerLoader, ExtendLoader } from '../loader';
+import { LoggerLoader } from '../loader/logger';
 
-async function loaderConfig(app: Application): Promise<void> {
+async function loadConfig(app: Application): Promise<void> {
   const loader = new ConfigLoader();
   app.config = await loader.load();
 }
 
-async function loaderController(app: Application): Promise<void> {
+async function loadLogger(app: Application): Promise<void> {
+  const loader = new LoggerLoader(app.config.logger);
+  app.logger = await loader.load(app);
+}
+
+async function loadController(app: Application): Promise<void> {
   const loader = new ControllerLoader();
   await loader.load(app);
 }
 
-async function loaderExtends(app: Application): Promise<void> {
+async function loadExtends(app: Application): Promise<void> {
   const loader = new ExtendLoader();
   await loader.load(app);
 }
@@ -35,13 +41,16 @@ export class ApplicationFactory {
     global.__app__ = app;
 
     // config
-    await loaderConfig(app);
+    await loadConfig(app);
+
+    // logger
+    await loadLogger(app);
 
     // extend
-    await loaderExtends(app);
+    await loadExtends(app);
 
     // controller
-    await loaderController(app);
+    await loadController(app);
 
     // router
     // health check

@@ -2,7 +2,6 @@ import appRootPath from 'app-root-path';
 import path from 'path';
 import fs from 'fs';
 import { Application } from '..';
-import { TitLogger } from '../logger';
 import { walkDirectory } from './util';
 import { IController } from '../controller';
 
@@ -34,18 +33,17 @@ export class ControllerLoader {
   public async load(app: Application): Promise<void> {
     const rootPath = path.resolve(appRootPath.path, this.root);
     if (!fs.existsSync(rootPath)) {
-      TitLogger.warn(`Not exists controller directory '${rootPath}'`);
+      app.logger.warn(`Not exists controller directory '${rootPath}'`);
       return;
     }
     const files = this.getFiles(rootPath);
     const controllers = new Map<string, IController>();
     for (const controllerPath of files) {
       const modulePath = `${controllerPath}`;
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const mod = require(modulePath);
+      const mod = module.require(modulePath);
       const name = path.relative(rootPath, controllerPath);
       controllers.set(name, mod);
     }
-    TitLogger.debug(...controllers.keys());
+    app.logger.debug('Router load complete', ...controllers.keys());
   }
 }

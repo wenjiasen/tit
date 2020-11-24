@@ -1,8 +1,9 @@
+import { ILogger } from './interface/logger.interface';
 import { isProductionModel } from './util/helper';
-class Logger {
-  debug(...args: any): void {
+export default class Logger implements ILogger {
+  debug(msg: string): void {
     if (!isProductionModel()) {
-      console.debug(args);
+      console.debug(msg);
     }
   }
 
@@ -18,6 +19,3 @@ class Logger {
     console.error(err);
   }
 }
-//TODO：支持由外部项目配置如何处理日志
-const logger = new Logger();
-export { logger as TitLogger };

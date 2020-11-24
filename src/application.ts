@@ -3,6 +3,7 @@ import koaRouter from 'koa-router';
 import koaCompress from 'koa-compress';
 import koaJson from 'koa-json';
 import koaBodyParser from 'koa-bodyparser';
+import { ILogger } from './interface/logger.interface';
 
 declare module 'koa' {
   interface Context {
@@ -13,6 +14,7 @@ declare module 'koa' {
 
 export interface IConfig {
   port: number;
+  logger?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -20,14 +22,14 @@ export interface IScope {}
 
 export class Application extends koa {
   public config!: IConfig;
+  public logger!: ILogger;
   public rootScope!: IScope;
   public rootRouter = new koaRouter();
   constructor() {
     super();
     this.rootScope = {};
-
     process.on('uncaughtException', (e) => {
-      // TitLogger.error(e);
+      this.logger.error(e);
     });
 
     // 压缩中间件

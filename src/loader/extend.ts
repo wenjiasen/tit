@@ -2,7 +2,6 @@ import appRootPath from 'app-root-path';
 import path from 'path';
 import { Application } from '..';
 import fs from 'fs';
-import { TitLogger } from '../logger';
 import { walkDirectory } from './util';
 import { IExtend } from '../extend';
 
@@ -34,7 +33,7 @@ export class ExtendLoader {
   public async load(app: Application): Promise<void> {
     const rootPath = path.resolve(appRootPath.path, this.root);
     if (!fs.existsSync(rootPath)) {
-      TitLogger.warn(`Not exists controller directory '${rootPath}'`);
+      app.logger.warn(`Not exists controller directory '${rootPath}'`);
       return;
     }
     const files = this.getFiles(rootPath);
@@ -48,6 +47,6 @@ export class ExtendLoader {
       instance.reduce(app);
       modules.set(name, instance);
     }
-    TitLogger.debug(modules.keys());
+    app.logger.debug('all routers', modules.keys());
   }
 }
