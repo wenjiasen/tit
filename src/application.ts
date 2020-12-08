@@ -20,12 +20,18 @@ export interface IConfig {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IScope {}
 
+export type ApplicationOpts = {
+  koaCompress?: koaCompress.CompressOptions;
+  koaBodyParser?: koaBodyParser.Options;
+  koaJson?: any;
+};
+
 export class Application extends koa {
   public config!: IConfig;
   public logger!: ILogger;
   public rootScope!: IScope;
   public rootRouter = new koaRouter();
-  constructor() {
+  constructor(private opts?: ApplicationOpts) {
     super();
     this.rootScope = {};
     process.on('uncaughtException', (e) => {
@@ -33,12 +39,12 @@ export class Application extends koa {
     });
 
     // 压缩中间件
-    this.use(koaCompress());
+    this.use(koaCompress(this.opts?.koaCompress));
 
     // body处理
-    this.use(koaBodyParser());
+    this.use(koaBodyParser(this.opts?.koaBodyParser));
 
     // JSON
-    this.use(koaJson());
+    this.use(koaJson(this.opts?.koaJson));
   }
 }
