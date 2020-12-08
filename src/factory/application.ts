@@ -1,4 +1,4 @@
-import { Application, TitRouter } from '..';
+import { Application, ApplicationOpts, TitRouter } from '..';
 import { ConfigLoader, ControllerLoader, ExtendLoader } from '../loader';
 import { LoggerLoader } from '../loader/logger';
 
@@ -36,8 +36,8 @@ export class ApplicationFactory {
   /**
    * crate an Application instance
    */
-  public static async create(): Promise<Application> {
-    const app = new Application();
+  public static async create(opts?: { app: ApplicationOpts }): Promise<Application> {
+    const app = new Application(opts?.app);
     global.__app__ = app;
 
     // config
