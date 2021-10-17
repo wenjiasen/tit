@@ -4,6 +4,7 @@ import koaCompress from 'koa-compress';
 import koaJson from 'koa-json';
 import koaBodyParser from 'koa-bodyparser';
 import { ILogger } from './interface/logger.interface';
+import { IController, IExtend } from '.';
 
 declare module 'koa' {
   interface Context {
@@ -14,7 +15,6 @@ declare module 'koa' {
 
 export interface IConfig {
   port: number;
-  logger?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -31,6 +31,8 @@ export class Application extends koa {
   public logger!: ILogger;
   public rootScope!: IScope;
   public rootRouter = new koaRouter();
+  public _controllers: { name: string; module: IController }[] = [];
+  public _extends: { name: string; module: IExtend }[] = [];
   constructor(private opts?: ApplicationOpts) {
     super();
     this.rootScope = {};

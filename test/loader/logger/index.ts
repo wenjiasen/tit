@@ -16,4 +16,8 @@ export default class CustomLogger implements ILogger {
   error(err: Error): void {
     console.error(err);
   }
+
+  test(): void {
+    console.trace();
+  }
 }

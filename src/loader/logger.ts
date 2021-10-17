@@ -1,28 +1,24 @@
-import appRootPath from 'app-root-path';
 import path from 'path';
+import fs from 'fs';
 import { Application } from '../application';
 import { ILogger } from '../interface/logger.interface';
+import { getMainDir, newModule } from './util';
 
 export class LoggerLoader {
   public readonly root: string | undefined;
-  constructor(root?: string) {
-    this.root = process.env.TIT_LOGGER_CLASS || root;
-  }
 
   public load(app: Application): ILogger {
-    let mod;
-    if (this.root) {
-      const filePath = path.resolve(appRootPath.path, this.root);
-      mod = module.require(filePath);
-      if (mod.__esModule) {
-        return new mod.default(app);
-      }
-      if (mod.constructor) return new mod(app);
-      throw Error(`Invalid Logger: ${process.env.TIT_LOGGER_CLASS}`);
-    } else {
+    const rootPath = path.resolve(getMainDir(), './logger');
+    if (!fs.existsSync(rootPath)) {
+      // console.warn(`Not exists logger directory '${rootPath}'`);
       // default logger
-      mod = require('../logger');
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const mod = require('../logger');
       return new mod.default(app);
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const mod = newModule<ILogger>(rootPath, app);
+      return mod;
     }
   }
 }

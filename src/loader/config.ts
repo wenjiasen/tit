@@ -1,23 +1,18 @@
-import appRootPath from 'app-root-path';
 import path from 'path';
 import { IConfig } from '..';
+import { getMainDir } from './util';
+import fs from 'fs';
 
 export class ConfigLoader {
-  public readonly root: string;
   private readonly defaultConfig: IConfig = { port: 80 };
-  constructor(root?: string) {
-    this.root = root || this.getRoot();
-  }
-
-  private getRoot(): string {
-    const DEFAULT_DIR = path.resolve(appRootPath.path, `./config`);
-    const CONFIG_DIR = process.env.TIT_CONFIG_DIR || DEFAULT_DIR;
-    return CONFIG_DIR;
-  }
 
   public async load(): Promise<IConfig> {
-    const filePath = path.resolve(appRootPath.path, `${this.root}`);
-    const data = await require(filePath);
+    const rootPath = path.resolve(getMainDir(), './config');
+    if (!fs.existsSync(rootPath)) {
+      // console.warn(`Not exists controller directory '${rootPath}'`);
+      return this.defaultConfig;
+    }
+    const data = await require(rootPath);
     return Object.assign(this.defaultConfig, data);
   }
 }

@@ -1,13 +1,16 @@
-import appRootPath from 'app-root-path';
 import path from 'path';
+import process from 'process';
 import fs from 'fs';
+import Application from 'koa';
+
+export function getMainDir(): string {
+  const mainModule = require.main || process.mainModule;
+  if (!mainModule) throw "Can't find main module";
+  return path.dirname(mainModule.filename);
+}
 
 export function getSourceRoot(): string {
-  let dir = './src';
-  if (process.env.NODE_ENV === 'production') {
-    dir = './dist';
-  }
-  return path.resolve(appRootPath.path, dir);
+  return getMainDir();
 }
 
 export function walkDirectory(dir: string): string[] {
@@ -23,4 +26,13 @@ export function walkDirectory(dir: string): string[] {
     }
   });
   return results;
+}
+
+export function newModule<T>(filepath: string, app: Application): T {
+  const mod = module.require(filepath);
+  if (mod.__esModule) {
+    return new mod.default(app);
+  }
+  if (mod.constructor) return new mod(app);
+  throw Error(`Invalid Module: ${filepath}`);
 }

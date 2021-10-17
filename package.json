@@ -8,7 +8,8 @@
     "build": "npm run clean && tsc --build ./tsconfig.build.json",
     "clean": "rm -rf ./dist/*",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "test": "jest",
+    "test": "jest --silent",
+    "test:coverage": "jest --silent --coverage",
     "doc-serve": "docsify serve ./docs"
   },
   "keywords": [
@@ -41,13 +42,11 @@
   },
   "dependencies": {
     "@koa/router": "^10.1.1",
-    "@types/app-root-path": "^1.2.4",
     "@types/koa": "^2.13.1",
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-compress": "^2.0.9",
     "@types/koa-json": "^2.0.18",
     "@types/source-map-support": "^0.5.4",
-    "app-root-path": "^3.0.0",
     "joi": "^17.4.2",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.2.1",

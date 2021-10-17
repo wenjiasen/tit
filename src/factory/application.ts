@@ -8,7 +8,7 @@ async function loadConfig(app: Application): Promise<void> {
 }
 
 async function loadLogger(app: Application): Promise<void> {
-  const loader = new LoggerLoader(app.config.logger);
+  const loader = new LoggerLoader();
   app.logger = await loader.load(app);
 }
 
