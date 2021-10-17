@@ -2,7 +2,7 @@ import { CLASS_CONTROLLER_METADATA, METHOD_ROUTER_METADATA } from '../constants'
 import { MethodRouterMetaData } from '..';
 import { Next, Middleware, ParameterizedContext } from 'koa';
 import { Application } from '../..';
-import koaRouter from 'koa-router';
+import koaRouter from '@koa/router';
 import { HttpMethod } from '../../lib';
 
 export type ClassControllerMetaData = {

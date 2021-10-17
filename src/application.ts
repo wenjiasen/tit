@@ -1,5 +1,5 @@
 import koa from 'koa';
-import koaRouter from 'koa-router';
+import koaRouter from '@koa/router';
 import koaCompress from 'koa-compress';
 import koaJson from 'koa-json';
 import koaBodyParser from 'koa-bodyparser';
