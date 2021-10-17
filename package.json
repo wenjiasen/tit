@@ -3,6 +3,7 @@
   "version": "0.1.19",
   "description": "A simple api framework by use TypeScript & Node.js",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "npm run clean && tsc --build ./tsconfig.build.json",
     "clean": "rm -rf ./dist/*",
@@ -45,7 +46,7 @@
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-compress": "^2.0.9",
     "@types/koa-json": "^2.0.18",
-    "@types/source-map-support": "^0.5.3",
+    "@types/source-map-support": "^0.5.4",
     "app-root-path": "^3.0.0",
     "joi": "^17.4.2",
     "koa": "^2.13.1",
@@ -53,6 +54,6 @@
     "koa-compress": "^3.0.0",
     "koa-json": "^2.0.2",
     "reflect-metadata": "^0.1.13",
-    "source-map-support": "^0.5.16"
+    "source-map-support": "^0.5.20"
   }
 }
