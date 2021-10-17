@@ -1,4 +1,4 @@
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { PARAMETER_QUERY_METADATA } from '../constants';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

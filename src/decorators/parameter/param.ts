@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { PARAMETER_PARAM_METADATA } from '../constants';
 
 export type ParameterRouterParamMetaData = {

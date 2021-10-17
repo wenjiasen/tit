@@ -13,7 +13,7 @@ import {
   CLASS_CONTROLLER_METADATA,
   METHOD_ROUTER_METADATA,
 } from '../constants';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { TitMiddleware } from '../../router';
 import { ClassControllerMetaData } from '../class';
 
