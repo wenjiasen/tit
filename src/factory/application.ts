@@ -1,15 +1,10 @@
 import { Application, ApplicationOpts, TitRouter } from '..';
 import { ConfigLoader, ControllerLoader, ExtendLoader } from '../loader';
-import { LoggerLoader } from '../loader/logger';
+import koaPinoLogger from 'koa-pino-logger'
 
 async function loadConfig(app: Application): Promise<void> {
   const loader = new ConfigLoader();
   app.config = await loader.load();
-}
-
-async function loadLogger(app: Application): Promise<void> {
-  const loader = new LoggerLoader();
-  app.logger = await loader.load(app);
 }
 
 async function loadController(app: Application): Promise<void> {
@@ -38,13 +33,14 @@ export class ApplicationFactory {
    */
   public static async create(opts?: { app: ApplicationOpts }): Promise<Application> {
     const app = new Application(opts?.app);
+
     global.__app__ = app;
+
+    // req log
+    app.use(koaPinoLogger);
 
     // config
     await loadConfig(app);
-
-    // logger
-    await loadLogger(app);
 
     // extend
     await loadExtends(app);

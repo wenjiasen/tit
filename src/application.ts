@@ -1,9 +1,9 @@
+import pino, { Logger } from 'pino';
 import koa from 'koa';
 import koaRouter from '@koa/router';
 import koaCompress from 'koa-compress';
 import koaJson from 'koa-json';
 import koaBodyParser from 'koa-bodyparser';
-import { ILogger } from './interface/logger.interface';
 import { IController, IExtend } from '.';
 
 declare module 'koa' {
@@ -18,7 +18,7 @@ export interface IConfig {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IScope {}
+export interface IScope { }
 
 export type ApplicationOpts = {
   koaCompress?: koaCompress.CompressOptions;
@@ -28,14 +28,16 @@ export type ApplicationOpts = {
 
 export class Application extends koa {
   public config!: IConfig;
-  public logger!: ILogger;
   public rootScope!: IScope;
+  public readonly logger!: Logger;
   public rootRouter = new koaRouter();
   public _controllers: { name: string; module: IController }[] = [];
   public _extends: { name: string; module: IExtend }[] = [];
   constructor(private opts?: ApplicationOpts) {
     super();
     this.rootScope = {};
+    this.logger = pino();
+
     process.on('uncaughtException', (e) => {
       this.logger.error(e);
     });
