@@ -7,6 +7,3 @@ export * from './router';
 export * from './controller';
 export * from './server';
 export * from './extend';
-
-import sourceMapSupport from 'source-map-support';
-sourceMapSupport.install();
