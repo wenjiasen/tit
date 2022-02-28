@@ -22,12 +22,12 @@
     "access": "public"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.8",
-    "@babel/preset-env": "^7.15.8",
-    "@babel/preset-typescript": "^7.15.0",
+    "@babel/core": "^7.17.5",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-typescript": "^7.16.7",
     "@types/jest": "^26.0.24",
-    "@types/koa__router": "^8.0.8",
-    "@types/node": "^10.17.60",
+    "@types/koa__router": "^8.0.11",
+    "@types/node": "^14.18.12",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "babel-jest": "^26.6.3",
@@ -43,16 +43,19 @@
   "dependencies": {
     "@koa/router": "^10.1.1",
     "@types/koa": "^2.13.4",
-    "@types/koa-bodyparser": "^4.3.3",
+    "@types/koa-bodyparser": "^4.3.5",
     "@types/koa-compress": "^2.0.9",
     "@types/koa-json": "^2.0.20",
     "@types/source-map-support": "^0.5.4",
-    "joi": "^17.4.2",
-    "koa": "^2.13.3",
+    "joi": "^17.6.0",
+    "koa": "^2.13.4",
     "koa-bodyparser": "^4.2.1",
     "koa-compress": "^3.0.0",
     "koa-json": "^2.0.2",
     "reflect-metadata": "^0.1.13",
-    "source-map-support": "^0.5.20"
+    "source-map-support": "^0.5.21"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
