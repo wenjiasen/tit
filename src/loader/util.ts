@@ -1,7 +1,7 @@
 import path from 'path';
 import process from 'process';
 import fs from 'fs';
-import Application from 'koa';
+import { Application } from '../';
 import appRootPath from 'app-root-path';
 
 export function getMainDir(): string {
@@ -17,7 +17,7 @@ export function getSourceRoot(): string {
 export function walkDirectory(dir: string): string[] {
   let results: string[] = [];
   const list = fs.readdirSync(dir);
-  list.forEach(function(file) {
+  list.forEach(function (file) {
     file = dir + '/' + file;
     const stat = fs.statSync(file);
     if (stat && stat.isDirectory()) {
@@ -32,7 +32,15 @@ export function walkDirectory(dir: string): string[] {
 export function newModule<T>(filepath: string, app: Application): T {
   const mod = module.require(filepath);
   if (mod.__esModule) {
-    return new mod.default(app);
+    let modConstructor = mod.default;
+    if (!modConstructor) {
+      const name = Object.getOwnPropertyNames(mod).find((n: string) => (/controller$/ig.test(n)));
+      if (!name) {
+        throw new Error(`can't load controller file [${filepath}],can't get module constructor. Please check module has default export or Controller instance like 'IndexController'`);
+      }
+      modConstructor = mod[name];
+    }
+    return new modConstructor(app);
   }
   if (mod.constructor) return new mod(app);
   throw Error(`Invalid Module: ${filepath}`);

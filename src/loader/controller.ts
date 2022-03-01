@@ -13,7 +13,7 @@ export class ControllerLoader {
   }
 
   public async load(app: Application): Promise<void> {
-    const rootPath = path.resolve(getMainDir(), './extend');
+    const rootPath = path.resolve(getMainDir(), './controller');
 
     if (!fs.existsSync(rootPath)) {
       // app.logger.warn(`Not exists controller directory '${rootPath}'`);

@@ -37,7 +37,7 @@ export class ApplicationFactory {
     global.__app__ = app;
 
     // req log
-    app.use(koaPinoLogger);
+    app.use(koaPinoLogger());
 
     // config
     await loadConfig(app);
