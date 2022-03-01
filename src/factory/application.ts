@@ -1,6 +1,6 @@
 import { Application, ApplicationOpts, TitRouter } from '..';
 import { ConfigLoader, ControllerLoader, ExtendLoader } from '../loader';
-import koaPinoLogger from 'koa-pino-logger'
+import pinoHttp from 'pino-http'
 
 async function loadConfig(app: Application): Promise<void> {
   const loader = new ConfigLoader();
@@ -37,7 +37,11 @@ export class ApplicationFactory {
     global.__app__ = app;
 
     // req log
-    app.use(koaPinoLogger());
+    const pinoHttpWrap = pinoHttp(opts?.app?.pino)
+    app.use(async (ctx, next) => {
+      pinoHttpWrap(ctx.req, ctx.res)
+      await next();
+    });
 
     // config
     await loadConfig(app);

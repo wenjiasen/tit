@@ -36,7 +36,7 @@ export function newModule<T>(filepath: string, app: Application): T {
     if (!modConstructor) {
       const name = Object.getOwnPropertyNames(mod).find((n: string) => (/controller$/ig.test(n)));
       if (!name) {
-        throw new Error(`can't load controller file [${filepath}],can't get module constructor. Please check module has default export or Controller instance like 'IndexController'`);
+        throw new Error(`Can't load controller file [${filepath}]. Not found module constructor. Please check module has default export or Controller class like 'IndexController'`);
       }
       modConstructor = mod[name];
     }
