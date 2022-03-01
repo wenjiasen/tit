@@ -32,12 +32,14 @@ export type ApplicationOpts = {
 
 export class Application extends koa {
   public rootScope!: IScope;
+  public readonly config!: IConfig;
   public readonly logger!: Logger;
   public rootRouter = new koaRouter();
   public _controllers: { name: string; module: IController }[] = [];
   public _extends: { name: string; module: IExtend }[] = [];
-  constructor(private config: IConfig, private opts?: ApplicationOpts) {
+  constructor(config: IConfig, private opts?: ApplicationOpts) {
     super();
+    this.config = config;
     this.rootScope = {};
     this.logger = pino({
       ...opts?.pino,
