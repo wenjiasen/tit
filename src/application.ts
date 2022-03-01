@@ -24,6 +24,7 @@ export type ApplicationOpts = {
   koaCompress?: koaCompress.CompressOptions;
   koaBodyParser?: koaBodyParser.Options;
   koaJson?: any;
+  pino?: pino.LoggerOptions;
 };
 
 export class Application extends koa {
@@ -36,7 +37,7 @@ export class Application extends koa {
   constructor(private opts?: ApplicationOpts) {
     super();
     this.rootScope = {};
-    this.logger = pino();
+    this.logger = pino(opts?.pino);
 
     process.on('uncaughtException', (e) => {
       this.logger.error(e);

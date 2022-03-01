@@ -2,6 +2,7 @@ import path from 'path';
 import process from 'process';
 import fs from 'fs';
 import Application from 'koa';
+import appRootPath from 'app-root-path';
 
 export function getMainDir(): string {
   const mainModule = require.main || process.mainModule;
@@ -10,7 +11,7 @@ export function getMainDir(): string {
 }
 
 export function getSourceRoot(): string {
-  return getMainDir();
+  return appRootPath.path;
 }
 
 export function walkDirectory(dir: string): string[] {
