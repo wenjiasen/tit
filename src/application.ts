@@ -15,6 +15,9 @@ declare module 'koa' {
 
 export interface IConfig {
   port: number;
+  log: {
+    level: pino.Level,
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -28,16 +31,19 @@ export type ApplicationOpts = {
 };
 
 export class Application extends koa {
-  public config!: IConfig;
   public rootScope!: IScope;
   public readonly logger!: Logger;
   public rootRouter = new koaRouter();
   public _controllers: { name: string; module: IController }[] = [];
   public _extends: { name: string; module: IExtend }[] = [];
-  constructor(private opts?: ApplicationOpts) {
+  constructor(private config: IConfig, private opts?: ApplicationOpts) {
     super();
     this.rootScope = {};
-    this.logger = pino(opts?.pino);
+    this.logger = pino({
+      ...opts?.pino,
+      level: this.config.log.level
+    }
+    );
 
     process.on('uncaughtException', (e) => {
       this.logger.error(e);

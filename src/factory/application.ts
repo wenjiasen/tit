@@ -1,10 +1,9 @@
-import { Application, ApplicationOpts, TitRouter } from '..';
+import { Application, ApplicationOpts, TitRouter, IConfig } from '..';
 import { ConfigLoader, ControllerLoader, ExtendLoader } from '../loader';
-import pinoHttp from 'pino-http'
 
-async function loadConfig(app: Application): Promise<void> {
+async function loadConfig(): Promise<IConfig> {
   const loader = new ConfigLoader();
-  app.config = await loader.load();
+  return await loader.load();
 }
 
 async function loadController(app: Application): Promise<void> {
@@ -32,19 +31,10 @@ export class ApplicationFactory {
    * crate an Application instance
    */
   public static async create(opts?: { app: ApplicationOpts }): Promise<Application> {
-    const app = new Application(opts?.app);
-
-    global.__app__ = app;
-
-    // req log
-    const pinoHttpWrap = pinoHttp(opts?.app?.pino)
-    app.use(async (ctx, next) => {
-      pinoHttpWrap(ctx.req, ctx.res)
-      await next();
-    });
-
     // config
-    await loadConfig(app);
+    const config = await loadConfig();
+    const app = new Application(config, opts?.app);
+    global.__app__ = app;
 
     // extend
     await loadExtends(app);
