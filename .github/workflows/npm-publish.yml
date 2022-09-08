@@ -4,7 +4,7 @@
 name: Node.js Package
 
 on:
-  tag:
+  tags:
     types: [created]
 
 jobs:
