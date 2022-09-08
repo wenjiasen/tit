@@ -4,7 +4,7 @@
 name: Node.js Package
 
 on:
-  release:
+  tag:
     types: [created]
 
 jobs:
@@ -37,6 +37,7 @@ jobs:
           git config --local user.name "GitHub Action"
       - run: npm ci
       - run: npm run build
+      # - run: git tag -d ${{ steps.get_version.outputs.VERSION }} # 标签已经
       - run: npm version ${{ steps.get_version.outputs.VERSION }}
       - run: npm publish
         env:
