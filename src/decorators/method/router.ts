@@ -114,7 +114,7 @@ async function promiseValidate(schemaMap: Joi.SchemaMap, needValidData: Record<s
       });
       resolve({ value, error: undefined });
     } catch (error) {
-      return { error };
+      resolve({ error: error as any, value: undefined });
     }
   });
 }
