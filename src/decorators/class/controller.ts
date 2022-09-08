@@ -31,7 +31,7 @@ function mergeContext<StateT, CustomT>(handle: Function): Middleware<StateT, Cus
 export function Controller(ops: { prefix?: string } = {}) {
   return function(target: any): void {
     const metadata: ClassControllerMetaData | undefined = Reflect.getMetadata(CLASS_CONTROLLER_METADATA, target);
-    const app = global.__app__ as Application;
+    const app = global.__app__;
     metadata?.routerPropertyName?.forEach((routerName) => {
       const routerMetadata: MethodRouterMetaData = Reflect.getMetadata(METHOD_ROUTER_METADATA, target, routerName);
       const middleware = routerMetadata.middleware || [];
