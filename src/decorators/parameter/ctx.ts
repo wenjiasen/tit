@@ -6,7 +6,7 @@ export type ParameterRouterCtxMetaData = {
   schema: Joi.AnySchema;
 };
 
-export function PCtx(schema: Joi.AnySchema) {
+export function PContext(schema: Joi.AnySchema) {
   return function(target: any, propertyKey: string | symbol, parameterIndex: number): void {
     const metadata: ParameterRouterCtxMetaData[] = Reflect.getOwnMetadata(PARAMETER_CTX_METADATA, target, propertyKey) || [];
     metadata.push({ index: parameterIndex, schema: schema });
