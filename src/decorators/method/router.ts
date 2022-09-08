@@ -64,7 +64,7 @@ function scanTargetMetaData(target: any, propertyName: string): RouterData {
   const paramMeta: ParameterRouterParamMetaData[] = Reflect.getOwnMetadata(PARAMETER_PARAM_METADATA, target, propertyName) || [];
   const bodyMeta: ParameterRouterBodyMetaData | undefined = Reflect.getOwnMetadata(PARAMETER_BODY_METADATA, target, propertyName);
   const serverMeta: ParameterRouterServerMetaData[] = Reflect.getOwnMetadata(PARAMETER_SERVER_METADATA, target, propertyName) || [];
-  const ctxMeta: ParameterRouterCtxMetaData[] = Reflect.getOwnMetadata(PARAMETER_SERVER_METADATA, target, propertyName) || [];
+  const ctxMeta: ParameterRouterCtxMetaData[] = Reflect.getOwnMetadata(PARAMETER_CTX_METADATA, target, propertyName) || [];
 
   return {
     param: paramMeta,
@@ -96,8 +96,21 @@ async function joiValidateAsync(
     schemaMap[fieldName] = item.schema;
     needValidData[fieldName] = target[fieldName];
   }
-  return Joi.object(schemaMap).validateAsync(needValidData, {
-    stripUnknown: true,
+  return promiseValidate(schemaMap, needValidData);
+}
+
+async function promiseValidate(schemaMap: Joi.SchemaMap, needValidData: Record<string, unknown>) {
+  const joiObject = Joi.object(schemaMap);
+
+  return new Promise<Joi.ValidationResult<any>>(async (resolve, reject) => {
+    try {
+      const value = await joiObject.validateAsync(needValidData, {
+        stripUnknown: true,
+      });
+      resolve({ value, error: undefined });
+    } catch (error) {
+      return { error };
+    }
   });
 }
 
@@ -150,7 +163,7 @@ async function getRouterBody(ctx: Context, metadata: ParameterRouterBodyMetaData
       root: ctx.request.body,
     };
   }
-  const { error, value } = await Joi.object(metadata.schemaMap).validateAsync(body, { stripUnknown: true });
+  const { error, value } = await promiseValidate(metadata.schemaMap, body);
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   if (metadata.isOnlyRoot) {
@@ -196,7 +209,7 @@ async function getCtxParams(ctx: Context, paramNames: string[], metadata: Parame
 
 type RouterPath = string | RegExp | (string | RegExp)[];
 export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?: TitMiddleware[] }) {
-  return function(target: any, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void {
+  return function(target: any, propertyName: string, descriptor: TypedPropertyDescriptor<any>): void {
     const method = descriptor.value;
     if (isNullOrUndefined(method)) throw Error('method need a function');
     const paramNames = getParamNames(method);
@@ -238,9 +251,8 @@ export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?:
       }
 
       const inParameters = map2Array(params);
-
       await method.apply({ ctx, app }, inParameters);
-      await next();
+      if (next) await next();
     };
 
     const constructor = target.constructor;
