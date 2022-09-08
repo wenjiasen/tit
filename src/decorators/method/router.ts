@@ -14,11 +14,13 @@ import {
   CLASS_CONTROLLER_METADATA,
   METHOD_ROUTER_METADATA,
   PARAMETER_CTX_METADATA,
+  PARAMETER_FUNC_METADATA,
 } from '../constants';
 import Joi from 'joi';
 import { TitMiddleware } from '../../router';
 import { ClassControllerMetaData } from '../class';
 import { filterNullOrUndefinedProperty, isNullOrUndefined, lowerCaseObjectProperties, map2Array } from '../../util';
+import { ParameterRouterFunctionMetaData } from '../parameter/func';
 
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
 const ARGUMENT_NAMES = /([^\s,]+)/g;
@@ -45,6 +47,7 @@ type RouterData = {
   body?: ParameterRouterBodyMetaData;
   server: ParameterRouterServerMetaData[];
   ctx: ParameterRouterCtxMetaData[];
+  func: ParameterRouterFunctionMetaData<any>[];
 };
 
 export type MethodRouterMetaData = {
@@ -65,6 +68,7 @@ function scanTargetMetaData(target: any, propertyName: string): RouterData {
   const bodyMeta: ParameterRouterBodyMetaData | undefined = Reflect.getOwnMetadata(PARAMETER_BODY_METADATA, target, propertyName);
   const serverMeta: ParameterRouterServerMetaData[] = Reflect.getOwnMetadata(PARAMETER_SERVER_METADATA, target, propertyName) || [];
   const ctxMeta: ParameterRouterCtxMetaData[] = Reflect.getOwnMetadata(PARAMETER_CTX_METADATA, target, propertyName) || [];
+  const funcMeta: ParameterRouterFunctionMetaData<any>[] = Reflect.getOwnMetadata(PARAMETER_FUNC_METADATA, target, propertyName) || [];
 
   return {
     param: paramMeta,
@@ -72,6 +76,7 @@ function scanTargetMetaData(target: any, propertyName: string): RouterData {
     body: bodyMeta,
     server: serverMeta,
     ctx: ctxMeta,
+    func: funcMeta,
   };
 }
 
@@ -207,6 +212,35 @@ async function getCtxParams(ctx: Context, paramNames: string[], metadata: Parame
   return result;
 }
 
+/**
+ * 获取PFunction参数
+ * @param ctx
+ * @param paramNames
+ * @param metadata
+ * @returns
+ */
+async function getFunctionParams(
+  ctx: Context,
+  paramNames: string[],
+  metadata: ParameterRouterFunctionMetaData<any>[],
+): Promise<Record<number, any>> {
+  const schemaMap: Joi.SchemaMap = {};
+  const needValidData: { [key: string]: any } = {};
+  for (const item of metadata) {
+    const fieldName = paramNames[item.index].toLowerCase();
+    schemaMap[fieldName] = item.schema;
+    needValidData[fieldName] = await item.value.call({}, global.__app__, ctx);
+  }
+  const { error, value } = await promiseValidate(schemaMap, needValidData);
+  if (error) ctx.throw(400, error);
+  const result = {} as Record<number, any>;
+  for (const item of metadata.sort((a, b) => a.index - b.index)) {
+    const fieldName = paramNames[item.index].toLowerCase();
+    result[item.index] = value[fieldName];
+  }
+  return result;
+}
+
 type RouterPath = string | RegExp | (string | RegExp)[];
 export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?: TitMiddleware[] }) {
   return function(target: any, propertyName: string, descriptor: TypedPropertyDescriptor<any>): void {
@@ -247,6 +281,12 @@ export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?:
       // 检查ctx参数
       if (metadata.ctx.length) {
         const data = await getCtxParams(ctx, paramNames, metadata.ctx);
+        params = Object.assign({}, params, data);
+      }
+
+      // 检查ctx参数
+      if (metadata.func.length) {
+        const data = await getFunctionParams(ctx, paramNames, metadata.func);
         params = Object.assign({}, params, data);
       }
 

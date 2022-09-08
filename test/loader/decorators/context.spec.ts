@@ -1,6 +1,6 @@
 import assert from 'assert';
 import Joi from 'joi';
-import { HttpMethod, PCtx, Router } from '../../../src';
+import { HttpMethod, PContext, Router } from '../../../src';
 class LikeController {
   public ctx: {
     body?: string;
@@ -10,7 +10,7 @@ class LikeController {
     method: HttpMethod.POST,
     path: '',
   })
-  public async print(@PCtx(Joi.string()) name: string) {
+  public async print(@PContext(Joi.string()) name: string) {
     this.ctx.body = name + 'test';
   }
 }
