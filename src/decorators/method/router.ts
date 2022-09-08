@@ -16,11 +16,11 @@ import {
   PARAMETER_CTX_METADATA,
   PARAMETER_FUNC_METADATA,
 } from '../constants';
-import Joi from 'joi';
+import Joi, { func } from 'joi';
 import { TitMiddleware } from '../../router';
 import { ClassControllerMetaData } from '../class';
 import { filterNullOrUndefinedProperty, isNullOrUndefined, lowerCaseObjectProperties, map2Array } from '../../util';
-import { ParameterRouterFunctionMetaData } from '../parameter/func';
+import { ParameterRouterFunctionMetaData, PFunctionKind } from '../parameter/func';
 
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
 const ARGUMENT_NAMES = /([^\s,]+)/g;
@@ -228,10 +228,11 @@ async function getFunctionParams(
   const needValidData: { [key: string]: any } = {};
   for (const item of metadata) {
     const fieldName = paramNames[item.index].toLowerCase();
-    schemaMap[fieldName] = item.schema;
-    needValidData[fieldName] = await item.value.call({}, global.__app__, ctx);
+    schemaMap[fieldName] = await item.value.call({}, global.__app__, ctx);
+    needValidData[fieldName] = getKindValue(ctx, item.kind, fieldName);
   }
   const { error, value } = await promiseValidate(schemaMap, needValidData);
+
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
@@ -239,6 +240,22 @@ async function getFunctionParams(
     result[item.index] = value[fieldName];
   }
   return result;
+}
+function getKindValue(ctx: Context, kind: PFunctionKind, name: string): any {
+  switch (kind) {
+    case 'query':
+      return lowerCaseObjectProperties(ctx.query)[name.toLowerCase()];
+    case 'param':
+      return lowerCaseObjectProperties(ctx.params)[name.toLowerCase()];
+    case 'body':
+      // TODO  暂时只支持一级
+      return lowerCaseObjectProperties(ctx.request.body)[name.toLowerCase()];
+    case 'ctx':
+      // 区分大小写？
+      return ctx[name.toLowerCase()];
+    default:
+      return undefined;
+  }
 }
 
 type RouterPath = string | RegExp | (string | RegExp)[];

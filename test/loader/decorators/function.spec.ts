@@ -12,14 +12,18 @@ class LikeController {
   })
   public async print(
     @PFunction<number>({
-      schema: Joi.number().required(),
+      kind: 'ctx',
       value: async (app, ctx) => {
-        return parseInt(ctx.age);
+        return Joi.number()
+          .required()
+          .external((value, helper) => {
+            return value;
+          });
       },
     })
     age: number,
   ) {
-    this.ctx.body = age;
+    this.ctx.body = parseInt(age.toString());
   }
 }
 
@@ -28,4 +32,21 @@ test('test PFunction', async () => {
   const ctx: Record<string, unknown> = { age: 1.123 };
   await (controller.print as Function).call({}, ctx);
   assert(ctx.body === parseInt(ctx.age as any));
+});
+
+test('test PFunction failed', async () => {
+  try {
+    const controller = new LikeController();
+    let errorCode = '';
+    const ctx: Record<string, unknown> = {
+      age: 'a',
+      throw: (code: any) => {
+        errorCode = code;
+        throw code;
+      },
+    };
+    await (controller.print as Function).call({}, ctx);
+  } catch (error) {
+    assert((error as any) == '400');
+  }
 });
