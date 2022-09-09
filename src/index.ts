@@ -6,3 +6,5 @@ export * from './router';
 export * from './controller';
 export * from './server';
 export * from './extend';
+
+export const ApplicationInstance = global.__app__;
