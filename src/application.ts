@@ -1,7 +1,6 @@
 import pino, { Logger } from 'pino';
 import koa from 'koa';
 import koaRouter from '@koa/router';
-import koaCompress from 'koa-compress';
 import koaJson from 'koa-json';
 import koaBodyParser from 'koa-bodyparser';
 import { IController, IExtend } from '.';
@@ -24,7 +23,6 @@ export interface IConfig {
 export interface IScope { }
 
 export type ApplicationOpts = {
-  koaCompress?: koaCompress.CompressOptions;
   koaBodyParser?: koaBodyParser.Options;
   koaJson?: any;
   pino?: pino.LoggerOptions;
@@ -51,8 +49,6 @@ export class Application extends koa {
       this.logger.error(e);
     });
 
-    // 压缩中间件
-    this.use(koaCompress(this.opts?.koaCompress));
 
     // body处理
     this.use(koaBodyParser(this.opts?.koaBodyParser));
