@@ -36,7 +36,7 @@ export type ParameterRouterMetaData = {
  */
 function getParamNames(func: Function): string[] {
   const fnStr = func.toString().replace(STRIP_COMMENTS, '');
-  let result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
+  let result: string[] | null = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
   if (result === null) result = [];
   return result;
 }
@@ -162,7 +162,7 @@ async function getRouterQuery(ctx: Context, paramNames: string[], metadata: Para
  * @returns
  */
 async function getRouterBody(ctx: Context, metadata: ParameterRouterBodyMetaData): Promise<Record<number, any>> {
-  let body = filterNullOrUndefinedProperty(ctx.request.body);
+  let body = filterNullOrUndefinedProperty(ctx.request.body as unknown as any);
   if (metadata.isOnlyRoot) {
     body = {
       root: ctx.request.body,
@@ -260,7 +260,7 @@ function getKindValue(ctx: Context, kind: PFunctionKind, name: string): any {
 
 type RouterPath = string | RegExp | (string | RegExp)[];
 export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?: TitMiddleware[] }) {
-  return function(target: any, propertyName: string, descriptor: TypedPropertyDescriptor<any>): void {
+  return function (target: any, propertyName: string, descriptor: TypedPropertyDescriptor<any>): void {
     const method = descriptor.value;
     if (isNullOrUndefined(method)) throw Error('method need a function');
     const paramNames = getParamNames(method);
@@ -268,7 +268,7 @@ export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?:
     const app = global.__app__;
     const metadata = scanTargetMetaData(target, propertyName);
 
-    descriptor.value = async function(ctx: Context, next: Next): Promise<void> {
+    descriptor.value = async function (ctx: Context, next: Next): Promise<void> {
       // 处理query
       let params = {} as Record<string, any>;
 

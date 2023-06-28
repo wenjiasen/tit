@@ -24,11 +24,11 @@ export function isObject(object: Record<string, any>): boolean {
   }
 }
 
-export function filterNullOrUndefinedProperty(params: Record<string, any>): any {
+export function filterNullOrUndefinedProperty(params: unknown): any {
   if (params && isObject(params)) {
     const data: Record<string, any> = {};
-    Reflect.ownKeys(params).forEach((name) => {
-      let temp = params[name as string];
+    Reflect.ownKeys(params as Record<string, any>).forEach((name) => {
+      let temp = (params as Record<string, any>)[name as string];
       if (temp !== null && temp !== undefined) {
         if (Array.isArray(temp)) {
           temp = temp.map((i) => filterNullOrUndefinedProperty(i));
@@ -49,10 +49,10 @@ export function filterNullOrUndefinedProperty(params: Record<string, any>): any 
  * 将对象的素有属性名转为全小写
  * @param query
  */
-export function lowerCaseObjectProperties(query: Record<string, unknown>): Record<string, unknown> {
+export function lowerCaseObjectProperties(query: unknown): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const name of Object.getOwnPropertyNames(query)) {
-    result[name.toLowerCase()] = query[name];
+    result[name.toLowerCase()] = (query as Record<string, unknown>)[name];
   }
   return result;
 }
