@@ -14,18 +14,15 @@ declare module 'koa' {
 
 export interface IConfig {
   port: number;
-  log: {
-    level: pino.Level,
-  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IScope { }
+export interface IScope {}
 
 export type ApplicationOpts = {
   koaBodyParser?: koaBodyParser.Options;
   koaJson?: any;
-  pino?: pino.LoggerOptions;
+  pino?: Logger;
 };
 
 export class Application extends koa {
@@ -39,16 +36,11 @@ export class Application extends koa {
     super();
     this.config = config;
     this.rootScope = {};
-    this.logger = pino({
-      ...opts?.pino,
-      level: this.config.log.level
-    }
-    );
+    this.logger = opts?.pino ?? pino();
 
     process.on('uncaughtException', (e) => {
       this.logger.error(e);
     });
-
 
     // body处理
     this.use(koaBodyParser(this.opts?.koaBodyParser));
