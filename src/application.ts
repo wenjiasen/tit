@@ -36,7 +36,16 @@ export class Application extends koa {
     super();
     this.config = config;
     this.rootScope = {};
-    this.logger = opts?.pino ?? pino();
+    this.logger =
+      opts?.pino ??
+      pino({
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+          },
+        },
+      });
 
     process.on('uncaughtException', (e) => {
       this.logger.error(e);
