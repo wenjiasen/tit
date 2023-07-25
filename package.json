@@ -28,7 +28,7 @@
     "@babel/preset-typescript": "^7.16.7",
     "@types/app-root-path": "^1.2.4",
     "@types/jest": "^26.0.24",
-    "@types/node": "^14.18.27",
+    "@types/node": "^14.18.54",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
     "babel-jest": "^26.6.3",
@@ -60,6 +60,6 @@
     "reflect-metadata": "^0.1.13"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   }
 }
