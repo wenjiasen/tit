@@ -17,6 +17,9 @@ test('LoggerLoader test', async () => {
   const app = new Application(
     {
       port: 80,
+      log: {
+        level: 'info',
+      },
     },
     {
       pino: log,

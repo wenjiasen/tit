@@ -4,7 +4,7 @@ import { getSourceRoot } from './util';
 import fs from 'fs';
 
 export class ConfigLoader {
-  private readonly defaultConfig: IConfig = { port: 80 };
+  private readonly defaultConfig: IConfig = { port: 80, log: { level: 'info' } };
 
   public async load(): Promise<IConfig> {
     const rootPath = path.resolve(getSourceRoot(), './config');
