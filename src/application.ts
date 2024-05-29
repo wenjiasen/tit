@@ -14,6 +14,9 @@ declare module 'koa' {
 
 export interface IConfig {
   port: number;
+  log: {
+    level: pino.Level;
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -39,6 +42,7 @@ export class Application extends koa {
     this.logger =
       opts?.pino ??
       pino({
+        level: config.log.level,
         transport: {
           target: 'pino-pretty',
           options: {
