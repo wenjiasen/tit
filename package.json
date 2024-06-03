@@ -57,7 +57,7 @@
     "koa-json": "^2.0.2",
     "pino": "^8.5.0",
     "pino-pretty": "^10.1.0",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.2.2"
   },
   "engines": {
     "node": ">=16.0.0"
