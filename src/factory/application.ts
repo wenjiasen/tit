@@ -25,6 +25,7 @@ function getHealthRouter(): TitRouter {
   });
   return router;
 }
+export let app: Application;
 
 export class ApplicationFactory {
   /**
@@ -33,20 +34,20 @@ export class ApplicationFactory {
   public static async create(opts?: { app: ApplicationOpts }): Promise<Application> {
     // config
     const config = await loadConfig();
-    const app = new Application(config, opts?.app);
-    global.__app__ = app;
+    const appInstance = new Application(config, opts?.app);
+    app = appInstance;
 
     // extend
-    await loadExtends(app);
+    await loadExtends(appInstance);
 
     // controller
-    await loadController(app);
+    await loadController(appInstance);
 
     // router
     // health check
     const healthRouter = getHealthRouter();
-    app.use(healthRouter.routes());
+    appInstance.use(healthRouter.routes());
 
-    return app;
+    return appInstance;
   }
 }

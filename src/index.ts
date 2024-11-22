@@ -1,3 +1,5 @@
+import { app } from './factory';
+
 export * from './application';
 export * from './decorators';
 export * from './lib';
@@ -7,4 +9,4 @@ export * from './controller';
 export * from './server';
 export * from './extend';
 
-export const ApplicationInstance = global.__app__;
+export const ApplicationInstance = app;

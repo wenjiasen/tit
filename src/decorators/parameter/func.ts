@@ -13,7 +13,7 @@ export type ParameterRouterFunctionMetaData<T> = {
 export type PFunctionKind = 'query' | 'param' | 'ctx' | 'body';
 
 export function PFunction<T>(opts: { kind: PFunctionKind; value: Value<Joi.AnySchema<T>> }) {
-  return function(target: any, propertyKey: string | symbol, parameterIndex: number): void {
+  return function (target: object, propertyKey: string | symbol, parameterIndex: number): void {
     const metadata: ParameterRouterFunctionMetaData<T>[] = Reflect.getOwnMetadata(PARAMETER_FUNC_METADATA, target, propertyKey) || [];
     metadata.push({
       index: parameterIndex,
