@@ -1,7 +1,6 @@
 import { CLASS_CONTROLLER_METADATA, METHOD_ROUTER_METADATA } from '../constants';
 import { MethodRouterMetaData } from '..';
 import { Next, Middleware, ParameterizedContext } from 'koa';
-import { Application } from '../..';
 import koaRouter from '@koa/router';
 import { HttpMethod } from '../../lib';
 
@@ -29,7 +28,7 @@ function mergeContext<StateT, CustomT>(handle: Function): Middleware<StateT, Cus
   };
 }
 export function Controller(ops: { prefix?: string } = {}) {
-  return function(target: any): void {
+  return function (target: any): void {
     const metadata: ClassControllerMetaData | undefined = Reflect.getMetadata(CLASS_CONTROLLER_METADATA, target);
     const app = global.__app__;
     metadata?.routerPropertyName?.forEach((routerName) => {
