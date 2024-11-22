@@ -1,4 +1,6 @@
-import { Application, ApplicationFactory } from '../../src/index';
+import { test, describe } from '@jest/globals';
+
+import { Application, ApplicationFactory } from '@/index';
 import assert from 'assert';
 import pino from 'pino';
 

@@ -21,7 +21,7 @@ import { TitMiddleware } from '../../router';
 import { ClassControllerMetaData } from '../class';
 import { filterNullOrUndefinedProperty, isNullOrUndefined, lowerCaseObjectProperties, map2Array } from '../../util';
 import { ParameterRouterFunctionMetaData, PFunctionKind } from '../parameter/func';
-import { ApplicationInstance } from '@/index';
+import { app } from '@/factory';
 
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
 const ARGUMENT_NAMES = /([^\s,]+)/g;
@@ -226,7 +226,7 @@ async function getFunctionParams(
   const needValidData: { [key: string]: any } = {};
   for (const item of metadata) {
     const fieldName = paramNames[item.index].toLowerCase();
-    schemaMap[fieldName] = await item.value.call({}, ApplicationInstance, ctx);
+    schemaMap[fieldName] = await item.value.call({}, app, ctx);
     needValidData[fieldName] = getKindValue(ctx, item.kind, fieldName);
   }
   const { error, value } = await promiseValidate(schemaMap, needValidData);
@@ -305,7 +305,7 @@ export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?:
       }
 
       const inParameters = map2Array(params);
-      await method.apply({ ctx, ApplicationInstance }, inParameters);
+      await method.apply({ ctx, app }, inParameters);
       if (next) await next();
     };
 

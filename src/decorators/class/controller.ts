@@ -3,7 +3,7 @@ import { MethodRouterMetaData } from '..';
 import { Next, Middleware, ParameterizedContext } from 'koa';
 import koaRouter from '@koa/router';
 import { HttpMethod } from '../../lib';
-import { ApplicationInstance } from '@/index';
+import { app } from '@/factory';
 
 export type ClassControllerMetaData = {
   routerPropertyName: string[];
@@ -30,8 +30,9 @@ function mergeContext<StateT, CustomT>(
     );
   };
 }
-export function Controller(ops: { prefix?: string } = {}) {
-  return function (target: { prototype: Record<string, unknown> }): void {
+export function Controller(ops?: { prefix?: string }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function (target: { prototype: any }): void {
     const metadata: ClassControllerMetaData | undefined = Reflect.getMetadata(CLASS_CONTROLLER_METADATA, target);
     metadata?.routerPropertyName?.forEach((routerName) => {
       const routerMetadata: MethodRouterMetaData = Reflect.getMetadata(METHOD_ROUTER_METADATA, target, routerName);
@@ -44,11 +45,11 @@ export function Controller(ops: { prefix?: string } = {}) {
         if (ops?.prefix) {
           routerPath = `${ops?.prefix}${routerPath}`;
         }
-        if (checkDuplicatePath(routerPath.toString(), routerMetadata.method, ApplicationInstance.rootRouter)) {
+        if (checkDuplicatePath(routerPath.toString(), routerMetadata.method, app.rootRouter)) {
           console.error(new Error(`Duplicate router path: "${routerPath}"`).stack);
           process.exit();
         }
-        ApplicationInstance.rootRouter[routerMetadata.method](routerPath, ...middleware);
+        app.rootRouter[routerMetadata.method](routerPath, ...middleware);
       });
     });
   };

@@ -1,19 +1,24 @@
-import { Controller, HttpMethod, Router, PBody, PParam, PQuery, TitController } from '../../../src';
+import { Controller, HttpMethod, Router, PBody, PParam, PQuery, TitController, PServer } from '../../../src';
 import Joi from 'joi';
+import { TestServer } from '../server/test';
 
-@Controller({})
+@Controller()
 export default class TestController extends TitController {
   @Router({
     method: HttpMethod.GET,
     path: '/test/:id',
   })
-  public async get(@PParam(Joi.string().required()) id: string, @PQuery(Joi.number().integer()) limit: number) {
-    this.ctx.body = {
+  public async get(
+    @PParam(Joi.string().required()) id: string,
+    @PQuery(Joi.number().integer()) limit: number,
+    @PServer(TestServer) server: TestServer,
+  ) {
+    this.ctx.body = server.copy({
       params: { id },
       query: {
         limit,
       },
-    };
+    });
   }
 
   @Router({

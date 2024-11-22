@@ -38,7 +38,8 @@ export function OpenAPIRouter(ops: {
   requestType?: AnySchemaObject;
   responseType?: AnySchemaObject | Record<StatusCodes, AnySchemaObject>;
 }) {
-  return function (target: ObjectConstructor, propertyName: string, descriptor: TypedPropertyDescriptor<unknown>): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function (target: any, propertyName: string, descriptor: TypedPropertyDescriptor<any>): void {
     const handler = descriptor.value;
     if (!handler || !lodash.isFunction(handler)) throw Error('Decorator target need a function');
 

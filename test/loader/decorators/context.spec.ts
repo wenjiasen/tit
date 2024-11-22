@@ -1,6 +1,9 @@
 import assert from 'assert';
 import Joi from 'joi';
 import { HttpMethod, PContext, Router } from '../../../src';
+
+import { test } from '@jest/globals';
+
 class LikeController {
   public ctx: {
     body?: string;

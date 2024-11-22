@@ -3,6 +3,7 @@
     "files": true
   },
   "compilerOptions": {
+    "baseUrl": "./",
     "paths": {
       "@/*": [
         "./src/*"
@@ -21,9 +22,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
-    "types": [
-      "./src/types/global.d.ts"
-    ]
   },
   "exclude": [
     "./dist"
