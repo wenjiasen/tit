@@ -6,7 +6,7 @@ export function isNullOrUndefined(value: unknown): value is null | undefined {
   return value === null || value === undefined;
 }
 
-export function map2Array(obj: Record<number, any>): any[] {
+export function map2Array<T>(obj: Record<number, T>): T[] {
   const keys = Object.getOwnPropertyNames(obj);
   return keys
     .sort((a, b) => Number.parseInt(a) - Number.parseInt(b))
@@ -15,20 +15,20 @@ export function map2Array(obj: Record<number, any>): any[] {
     });
 }
 
-export function isObject(object: Record<string, any>): boolean {
+export function isObject(object: object): boolean {
   try {
     const keys = Reflect.ownKeys(object);
     return !!keys.length;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
 
-export function filterNullOrUndefinedProperty(params: unknown): any {
+export function filterNullOrUndefinedProperty(params: object): unknown {
   if (params && isObject(params)) {
-    const data: Record<string, any> = {};
-    Reflect.ownKeys(params as Record<string, any>).forEach((name) => {
-      let temp = (params as Record<string, any>)[name as string];
+    const data: Record<string, unknown> = {};
+    Reflect.ownKeys(params as Record<string, unknown>).forEach((name) => {
+      let temp = (params as Record<string, unknown>)[name as string];
       if (temp !== null && temp !== undefined) {
         if (Array.isArray(temp)) {
           temp = temp.map((i) => filterNullOrUndefinedProperty(i));

@@ -7,4 +7,4 @@ export * from './controller';
 export * from './server';
 export * from './extend';
 
-export const ApplicationInstance = global.__app__;
+// export const ApplicationInstance = app;

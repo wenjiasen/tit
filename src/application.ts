@@ -19,12 +19,15 @@ export interface IConfig {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IScope {}
+export type IScope = object;
 
 export type ApplicationOpts = {
   koaBodyParser?: koaBodyParser.Options;
-  koaJson?: any;
+  koaJson?: {
+    pretty?: boolean | undefined;
+    param?: string | undefined;
+    spaces?: number | undefined;
+  };
   pino?: Logger;
 };
 
@@ -35,7 +38,10 @@ export class Application extends koa {
   public rootRouter = new koaRouter();
   public _controllers: { name: string; module: IController }[] = [];
   public _extends: { name: string; module: IExtend }[] = [];
-  constructor(config: IConfig, private opts?: ApplicationOpts) {
+  constructor(
+    config: IConfig,
+    private opts?: ApplicationOpts,
+  ) {
     super();
     this.config = config;
     this.rootScope = {};

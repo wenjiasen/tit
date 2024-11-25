@@ -16,11 +16,12 @@ import {
   PARAMETER_CTX_METADATA,
   PARAMETER_FUNC_METADATA,
 } from '../constants';
-import Joi, { func } from 'joi';
+import Joi from 'joi';
 import { TitMiddleware } from '../../router';
 import { ClassControllerMetaData } from '../class';
 import { filterNullOrUndefinedProperty, isNullOrUndefined, lowerCaseObjectProperties, map2Array } from '../../util';
 import { ParameterRouterFunctionMetaData, PFunctionKind } from '../parameter/func';
+import { app } from '@/factory';
 
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
 const ARGUMENT_NAMES = /([^\s,]+)/g;
@@ -34,7 +35,7 @@ export type ParameterRouterMetaData = {
  * 获取函数的参数名
  * @param func
  */
-function getParamNames(func: Function): string[] {
+function getParamNames(func: object): string[] {
   const fnStr = func.toString().replace(STRIP_COMMENTS, '');
   let result: string[] | null = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
   if (result === null) result = [];
@@ -104,19 +105,16 @@ async function joiValidateAsync(
   return promiseValidate(schemaMap, needValidData);
 }
 
-async function promiseValidate(schemaMap: Joi.SchemaMap, needValidData: Record<string, unknown>) {
+async function promiseValidate(schemaMap: Joi.SchemaMap, needValidData: unknown) {
   const joiObject = Joi.object(schemaMap);
-
-  return new Promise<Joi.ValidationResult<any>>(async (resolve, reject) => {
-    try {
-      const value = await joiObject.validateAsync(needValidData, {
-        stripUnknown: true,
-      });
-      resolve({ value, error: undefined });
-    } catch (error) {
-      resolve({ error: error as any, value: undefined });
-    }
-  });
+  try {
+    const value = await joiObject.validateAsync(needValidData, {
+      stripUnknown: true,
+    });
+    return { value, error: undefined };
+  } catch (error) {
+    return { error: error as any, value: undefined };
+  }
 }
 
 /**
@@ -227,12 +225,11 @@ async function getFunctionParams(
   const schemaMap: Joi.SchemaMap = {};
   const needValidData: { [key: string]: any } = {};
   for (const item of metadata) {
-    const fieldName = paramNames[item.index].toLowerCase();
-    schemaMap[fieldName] = await item.value.call({}, global.__app__, ctx);
-    needValidData[fieldName] = getKindValue(ctx, item.kind, fieldName);
+    const fieldName = paramNames[item.index];
+    schemaMap[fieldName.toLowerCase()] = await item.value.call({}, app, ctx);
+    needValidData[fieldName.toLowerCase()] = getKindValue(ctx, item.kind, fieldName);
   }
   const { error, value } = await promiseValidate(schemaMap, needValidData);
-
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
@@ -251,8 +248,8 @@ function getKindValue(ctx: Context, kind: PFunctionKind, name: string): any {
       // TODO  暂时只支持一级
       return lowerCaseObjectProperties(ctx.request.body)[name.toLowerCase()];
     case 'ctx':
-      // 区分大小写？
-      return ctx[name.toLowerCase()];
+      // 区分大小写
+      return ctx[name];
     default:
       return undefined;
   }
@@ -265,7 +262,6 @@ export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?:
     if (isNullOrUndefined(method)) throw Error('method need a function');
     const paramNames = getParamNames(method);
 
-    const app = global.__app__;
     const metadata = scanTargetMetaData(target, propertyName);
 
     descriptor.value = async function (ctx: Context, next: Next): Promise<void> {
