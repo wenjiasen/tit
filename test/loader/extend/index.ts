@@ -1,7 +1,7 @@
-import { Application, IExtend } from '../../../src';
+import { IExtend } from '../../../src';
 
 export default class TestExtend implements IExtend {
-  reduce(app: Application): void {
+  reduce(): void {
     return;
   }
 }

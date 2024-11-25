@@ -1,6 +1,6 @@
-import { Controller, HttpMethod, Router, PBody, PParam, PQuery, TitController, PServer } from '../../../src';
+import { Controller, HttpMethod, Router, PBody, PParam, PQuery, TitController, PServer, PContext, PFunction } from '../../../src';
 import Joi from 'joi';
-import { TestServer } from '../server/test';
+import { TestServer } from '../server';
 
 @Controller()
 export default class TestController extends TitController {
@@ -12,12 +12,26 @@ export default class TestController extends TitController {
     @PParam(Joi.string().required()) id: string,
     @PQuery(Joi.number().integer()) limit: number,
     @PServer(TestServer) server: TestServer,
+    @PContext(Joi.string()) trailID: string,
+    @PFunction<string>({
+      kind: 'ctx',
+      value: async () => {
+        return Joi.string()
+          .required()
+          .external((value) => {
+            return value;
+          });
+      },
+    })
+    trailIDFunc: string,
   ) {
     this.ctx.body = server.copy({
       params: { id },
       query: {
         limit,
       },
+      ctxTrailID: trailID,
+      trailIDFunc: trailIDFunc,
     });
   }
 
