@@ -225,12 +225,11 @@ async function getFunctionParams(
   const schemaMap: Joi.SchemaMap = {};
   const needValidData: { [key: string]: any } = {};
   for (const item of metadata) {
-    const fieldName = paramNames[item.index].toLowerCase();
-    schemaMap[fieldName] = await item.value.call({}, app, ctx);
-    needValidData[fieldName] = getKindValue(ctx, item.kind, fieldName);
+    const fieldName = paramNames[item.index];
+    schemaMap[fieldName.toLowerCase()] = await item.value.call({}, app, ctx);
+    needValidData[fieldName.toLowerCase()] = getKindValue(ctx, item.kind, fieldName);
   }
   const { error, value } = await promiseValidate(schemaMap, needValidData);
-
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
@@ -249,8 +248,8 @@ function getKindValue(ctx: Context, kind: PFunctionKind, name: string): any {
       // TODO  暂时只支持一级
       return lowerCaseObjectProperties(ctx.request.body)[name.toLowerCase()];
     case 'ctx':
-      // 区分大小写？
-      return ctx[name.toLowerCase()];
+      // 区分大小写
+      return ctx[name];
     default:
       return undefined;
   }
