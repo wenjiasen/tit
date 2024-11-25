@@ -1766,6 +1766,7 @@ packages:
   eslint@8.57.0:
     resolution: {integrity: sha512-dZ6+mexnaTIbSBZWgou51U6OmzIhYM2VcNdtiTtI7qPNZm35Akpr0f6vtw3w1Kmn5PYo+tZVfh13WrhpS6oLqQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -2928,8 +2929,8 @@ packages:
   path-parse@1.0.7:
     resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
 
-  path-to-regexp@6.2.2:
-    resolution: {integrity: sha512-GQX3SSMokngb36+whdpRXE+3f9V8UzyAorlYvOGx87ufGHehNTn5lCxrKtLyZ4Yl/wEKnNnr98ZzOwwDZV5ogw==}
+  path-to-regexp@6.3.0:
+    resolution: {integrity: sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==}
 
   path-type@4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
@@ -4771,7 +4772,7 @@ snapshots:
       '@types/istanbul-lib-coverage': 2.0.6
       collect-v8-coverage: 1.0.2
 
-  '@jest/test-sequencer@26.6.3':
+  '@jest/test-sequencer@26.6.3(ts-node@10.9.2(@types/node@22.5.2)(typescript@4.9.5))':
     dependencies:
       '@jest/test-result': 26.6.2
       graceful-fs: 4.2.11
@@ -4779,7 +4780,11 @@ snapshots:
       jest-runner: 26.6.3(ts-node@10.9.2(@types/node@22.5.2)(typescript@4.9.5))
       jest-runtime: 26.6.3(ts-node@10.9.2(@types/node@22.5.2)(typescript@4.9.5))
     transitivePeerDependencies:
+      - bufferutil
+      - canvas
       - supports-color
+      - ts-node
+      - utf-8-validate
 
   '@jest/transform@26.6.2':
     dependencies:
@@ -4866,7 +4871,7 @@ snapshots:
       http-errors: 1.8.1
       koa-compose: 4.1.0
       methods: 1.1.2
-      path-to-regexp: 6.2.2
+      path-to-regexp: 6.3.0
     transitivePeerDependencies:
       - supports-color
 
@@ -6529,7 +6534,7 @@ snapshots:
   jest-config@26.6.3(ts-node@10.9.2(@types/node@22.5.2)(typescript@4.9.5)):
     dependencies:
       '@babel/core': 7.25.2
-      '@jest/test-sequencer': 26.6.3
+      '@jest/test-sequencer': 26.6.3(ts-node@10.9.2(@types/node@22.5.2)(typescript@4.9.5))
       '@jest/types': 26.6.2
       babel-jest: 26.6.3(@babel/core@7.25.2)
       chalk: 4.1.2
@@ -7354,7 +7359,7 @@ snapshots:
 
   path-parse@1.0.7: {}
 
-  path-to-regexp@6.2.2: {}
+  path-to-regexp@6.3.0: {}
 
   path-type@4.0.0: {}
 
