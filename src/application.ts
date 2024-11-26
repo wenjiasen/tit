@@ -18,9 +18,8 @@ export interface IConfig {
   };
 }
 
-export type IScope = {
-  [key: string]: unknown;
-};
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface IScope {}
 
 export type ApplicationOpts = {
   koaJson?: {
