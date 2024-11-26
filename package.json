@@ -52,7 +52,7 @@
     "@types/koa": "^2.15.0",
     "@types/koa-bodyparser": "^4.3.12",
     "@types/koa-json": "^2.0.23",
-    "@types/koa__router": "^8.0.11",
+    "@types/koa__router": "^12.0.4",
     "@types/source-map-support": "^0.5.10",
     "app-root-path": "^3.1.0",
     "class-transformer": "^0.5.1",
