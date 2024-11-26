@@ -7,9 +7,9 @@ import { app } from '../../factory';
 import { OperationObject, ParameterObject, ReferenceObject, RequestBodyObject, ResponseObject, SchemaObject } from 'openapi3-ts/oas31';
 import * as parse from 'joi-to-json';
 import Joi from 'joi';
-import { openApiBuilder } from '@/openapi';
 
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
+import { openApiBuilder } from '../../openapi';
 
 type RouterMetadata = {
   name: string | symbol;

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Joi from 'joi';
 import { REQ_BODY_METADATA } from '../constants';
-import { Constructor } from '@/util';
+import { Constructor } from '../..//util';
 
 export type ReqBodyMetaData = {
   index: number;

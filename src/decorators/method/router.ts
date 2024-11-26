@@ -171,7 +171,7 @@ async function getRouterBody(ctx: Context, metadata: ReqBodyMetaData): Promise<R
   const body = filterNullOrUndefinedProperty(ctx.request.body as unknown as any);
   let validData;
   if (metadata.reqBodyClass) {
-    const dtoInstance = plainToInstance(metadata.reqBodyClass, body);
+    const dtoInstance = plainToInstance<object, unknown>(metadata.reqBodyClass, body);
     const errors = await validate(dtoInstance, {
       skipNullProperties: true,
       skipUndefinedProperties: true,

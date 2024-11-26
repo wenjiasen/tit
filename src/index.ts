@@ -6,5 +6,6 @@ export * from './router';
 export * from './controller';
 export * from './server';
 export * from './extend';
+export * from './openapi';
 
 // export const ApplicationInstance = app;
