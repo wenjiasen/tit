@@ -1,6 +1,10 @@
 name: Run tests and upload coverage
 
-on: push
+on:
+  push:
+    paths-ignore:
+      - ".github/**"
+      - "docs/**"
 
 jobs:
   cache-and-install:
