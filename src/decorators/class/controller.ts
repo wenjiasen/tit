@@ -79,7 +79,7 @@ export function Controller(ops?: { prefix?: string }) {
               return {
                 in: 'path',
                 name: paramNames[row.index] ?? '',
-                schema: row.schema ? parse.default(row.schema, 'open-api-3.1') : {},
+                schema: row.schema ? parse.default(row.schema, 'open-api') : {},
                 required: isFieldRequired(row.schema),
               };
             }) ?? [];
@@ -89,7 +89,7 @@ export function Controller(ops?: { prefix?: string }) {
               return {
                 in: 'query',
                 name: paramNames[row.index] ?? '',
-                schema: row.schema ? parse.default(row.schema, 'open-api-3.1') : {},
+                schema: row.schema ? parse.default(row.schema, 'open-api') : {},
                 required: isFieldRequired(row.schema),
               };
             }) ?? [];

@@ -1,7 +1,6 @@
 name: Run tests and upload coverage
 
-on: 
-  push
+on: push
 
 jobs:
   test:
@@ -15,12 +14,18 @@ jobs:
 
       - name: Set up Node
         uses: actions/setup-node@v4
+        with:
+          node-version: "16"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Run tests
-        run: npx jest --coverage
+        run: pnpm jest --coverage
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
