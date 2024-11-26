@@ -7,7 +7,7 @@ export class ConfigLoader {
   private readonly defaultConfig: IConfig = { port: 80, log: { level: 'info' } };
 
   public async load(): Promise<IConfig> {
-    const rootPath = path.resolve(getSourceRoot(), './config');
+    const rootPath = path.resolve(getSourceRoot(), './config/index');
     if (!fs.existsSync(rootPath)) {
       // console.warn(`Not exists controller directory '${rootPath}'`);
       return this.defaultConfig;
