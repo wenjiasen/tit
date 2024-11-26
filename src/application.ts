@@ -1,8 +1,7 @@
 import pino, { Logger } from 'pino';
 import koa from 'koa';
 import koaRouter from '@koa/router';
-import koaJson from 'koa-json';
-import koaBodyParser from 'koa-bodyparser';
+import { bodyParser } from '@koa/bodyparser';
 import { IController, IExtend } from '.';
 
 declare module 'koa' {
@@ -19,10 +18,11 @@ export interface IConfig {
   };
 }
 
-export type IScope = object;
+export type IScope = {
+  [key: string]: unknown;
+};
 
 export type ApplicationOpts = {
-  koaBodyParser?: koaBodyParser.Options;
   koaJson?: {
     pretty?: boolean | undefined;
     param?: string | undefined;
@@ -61,10 +61,6 @@ export class Application extends koa {
       this.logger.error(e);
     });
 
-    // body处理
-    this.use(koaBodyParser(this.opts?.koaBodyParser));
-
-    // JSON
-    this.use(koaJson(this.opts?.koaJson));
+    this.use(bodyParser());
   }
 }

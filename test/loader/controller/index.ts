@@ -2,13 +2,15 @@ import { Controller, HttpMethod, Router, PBody, PParam, PQuery, TitController, P
 import Joi from 'joi';
 import { TestServer } from '../server';
 
-@Controller()
+@Controller({
+  prefix: '/api/v1',
+})
 export default class TestController extends TitController {
   @Router({
     method: HttpMethod.GET,
     path: '/test/:id',
   })
-  public async get(
+  public async getTestByID(
     @PParam(Joi.string().required()) id: string,
     @PQuery(Joi.number().integer()) limit: number,
     @PServer(TestServer) server: TestServer,
@@ -83,7 +85,7 @@ export default class TestController extends TitController {
 
   @Router({
     method: HttpMethod.DEL,
-    path: '/test',
+    path: '/test/:id',
   })
   public async del(@PParam(Joi.string().required()) id: string, @PQuery(Joi.number().integer()) limit: number) {
     this.ctx.body = {

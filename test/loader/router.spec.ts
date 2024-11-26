@@ -6,6 +6,8 @@ import TestAgent from 'supertest/lib/agent';
 import { test, describe, beforeAll } from '@jest/globals';
 import { RouterContext } from '@koa/router';
 import { Next } from 'koa';
+import { openApiBuilder } from '@/openapi';
+import { PostCreate } from './dto/post.dto';
 
 describe('Router', () => {
   let app: Application;
@@ -20,6 +22,8 @@ describe('Router', () => {
       await next();
     });
     app.use(app.rootRouter.routes());
+
+    console.log('yaml-------->\n', openApiBuilder.getSpecAsYaml());
     agent = supertest(http.createServer(app.callback()));
   });
 
@@ -35,7 +39,7 @@ describe('Router', () => {
     // const app = await ApplicationFactory.create();
     // app.use(app.rootRouter.routes());
     // const agent = supertest(http.createServer(app.callback()));
-    const res = await agent.get(`/test/${mockId}?limit=${mockLimit}`);
+    const res = await agent.get(`/api/v1/test/${mockId}?limit=${mockLimit}`);
     // console.log('body', res.body);
     if (res.status !== 200) {
       console.error(`Request failed with status: ${res.status}`);
@@ -52,7 +56,7 @@ describe('Router', () => {
 
   test('post test', async () => {
     const res = await agent
-      .post(`/test/${mockId}?limit=${mockLimit}`)
+      .post(`/api/v1/test/${mockId}?limit=${mockLimit}`)
       .send({
         name: mockName,
       })
@@ -64,7 +68,7 @@ describe('Router', () => {
 
   test('put test', async () => {
     const res = await agent
-      .post(`/test/${mockId}?limit=${mockLimit}`)
+      .post(`/api/v1/test/${mockId}?limit=${mockLimit}`)
       .send({
         name: mockName,
       })
@@ -75,7 +79,7 @@ describe('Router', () => {
   });
 
   test('del test', async () => {
-    const res = await agent.get(`/test/${mockId}?limit=${mockLimit}`);
+    const res = await agent.get(`/api/v1/test/${mockId}?limit=${mockLimit}`);
     // console.log('body', res.body);
     if (res.status !== 200) {
       console.error(`Request failed with status: ${res.status}`);
@@ -87,5 +91,25 @@ describe('Router', () => {
 
     assert(res.body.params.id == mockId);
     assert(res.body.query.limit == mockLimit);
+  });
+
+  test('create post', async () => {
+    const body: PostCreate = {
+      title: 'test create post',
+      text: 'hello word',
+      rating: 0,
+      email: 'test@gmail.com',
+      site: 'www.aifreetime.com',
+    };
+    const res = await agent.post(`/api/v1/post`).send(body);
+    // console.log('body', res.body);
+    if (res.status !== 200) {
+      console.error(`Request failed with status: ${res.status}`);
+      console.error(`Response body:`, res.body || res.text || 'No response body');
+    }
+
+    // 确认状态码为 200
+    expect(res.status).toBe(200);
+    assert(res.body.title == body.title);
   });
 });

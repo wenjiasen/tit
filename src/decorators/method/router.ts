@@ -3,13 +3,13 @@ import { HttpMethod } from '../../lib/enumerate';
 import { Next, Context } from 'koa';
 import { ParameterRouterQueryMetaData } from '../parameter/query';
 import { ParameterRouterParamMetaData } from '../parameter/param';
-import { ParameterRouterBodyMetaData } from '../parameter/body';
+import { ReqBodyMetaData } from '../parameter/body';
 import { ParameterRouterServerMetaData } from '../parameter/server';
 import { ParameterRouterCtxMetaData } from '../parameter/ctx';
 import {
   PARAMETER_QUERY_METADATA,
   PARAMETER_PARAM_METADATA,
-  PARAMETER_BODY_METADATA,
+  REQ_BODY_METADATA,
   PARAMETER_SERVER_METADATA,
   CLASS_CONTROLLER_METADATA,
   METHOD_ROUTER_METADATA,
@@ -19,9 +19,11 @@ import {
 import Joi from 'joi';
 import { TitMiddleware } from '../../router';
 import { ClassControllerMetaData } from '../class';
-import { filterNullOrUndefinedProperty, isNullOrUndefined, lowerCaseObjectProperties, map2Array } from '../../util';
+import { Constructor, filterNullOrUndefinedProperty, isNullOrUndefined, lowerCaseObjectProperties, map2Array } from '../../util';
 import { ParameterRouterFunctionMetaData, PFunctionKind } from '../parameter/func';
-import { app } from '@/factory';
+import { app } from '../../factory';
+import { validate } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
 const ARGUMENT_NAMES = /([^\s,]+)/g;
@@ -42,10 +44,10 @@ function getParamNames(func: object): string[] {
   return result;
 }
 
-type RouterData = {
+export type RouterData = {
   param: ParameterRouterParamMetaData[];
   query: ParameterRouterQueryMetaData[];
-  body?: ParameterRouterBodyMetaData;
+  body?: ReqBodyMetaData;
   server: ParameterRouterServerMetaData[];
   ctx: ParameterRouterCtxMetaData[];
   func: ParameterRouterFunctionMetaData<any>[];
@@ -55,6 +57,10 @@ export type MethodRouterMetaData = {
   path: RouterPath;
   method: HttpMethod;
   middleware?: TitMiddleware[];
+  summary?: string;
+  description?: string;
+  tags?: string[];
+  responseBodyClass?: Constructor<any>;
 };
 
 /**
@@ -66,7 +72,7 @@ export type MethodRouterMetaData = {
 function scanTargetMetaData(target: any, propertyName: string): RouterData {
   const queryMeta: ParameterRouterQueryMetaData[] = Reflect.getOwnMetadata(PARAMETER_QUERY_METADATA, target, propertyName) || [];
   const paramMeta: ParameterRouterParamMetaData[] = Reflect.getOwnMetadata(PARAMETER_PARAM_METADATA, target, propertyName) || [];
-  const bodyMeta: ParameterRouterBodyMetaData | undefined = Reflect.getOwnMetadata(PARAMETER_BODY_METADATA, target, propertyName);
+  const bodyMeta: ReqBodyMetaData | undefined = Reflect.getOwnMetadata(REQ_BODY_METADATA, target, propertyName);
   const serverMeta: ParameterRouterServerMetaData[] = Reflect.getOwnMetadata(PARAMETER_SERVER_METADATA, target, propertyName) || [];
   const ctxMeta: ParameterRouterCtxMetaData[] = Reflect.getOwnMetadata(PARAMETER_CTX_METADATA, target, propertyName) || [];
   const funcMeta: ParameterRouterFunctionMetaData<any>[] = Reflect.getOwnMetadata(PARAMETER_FUNC_METADATA, target, propertyName) || [];
@@ -98,9 +104,11 @@ async function joiValidateAsync(
   // 检查
   const target = lowerCaseObjectProperties(source);
   for (const item of metadata) {
-    const fieldName = paramNames[item.index].toLowerCase();
-    schemaMap[fieldName] = item.schema;
-    needValidData[fieldName] = target[fieldName];
+    const fieldName = paramNames[item.index]?.toLowerCase();
+    if (fieldName) {
+      schemaMap[fieldName] = item.schema;
+      needValidData[fieldName] = target[fieldName];
+    }
   }
   return promiseValidate(schemaMap, needValidData);
 }
@@ -129,8 +137,8 @@ async function getRouterParams(ctx: Context, paramNames: string[], metadata: Par
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
-    const fieldName = paramNames[item.index].toLowerCase();
-    result[item.index] = value[fieldName];
+    const fieldName = paramNames[item.index]?.toLowerCase();
+    if (fieldName) result[item.index] = value[fieldName];
   }
   return result;
 }
@@ -147,8 +155,8 @@ async function getRouterQuery(ctx: Context, paramNames: string[], metadata: Para
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
-    const fieldName = paramNames[item.index].toLowerCase();
-    result[item.index] = value[fieldName];
+    const fieldName = paramNames[item.index]?.toLowerCase();
+    if (fieldName) result[item.index] = value[fieldName];
   }
   return result;
 }
@@ -159,20 +167,41 @@ async function getRouterQuery(ctx: Context, paramNames: string[], metadata: Para
  * @param metadata
  * @returns
  */
-async function getRouterBody(ctx: Context, metadata: ParameterRouterBodyMetaData): Promise<Record<number, any>> {
-  let body = filterNullOrUndefinedProperty(ctx.request.body as unknown as any);
-  if (metadata.isOnlyRoot) {
-    body = {
-      root: ctx.request.body,
-    };
+async function getRouterBody(ctx: Context, metadata: ReqBodyMetaData): Promise<Record<number, any>> {
+  const body = filterNullOrUndefinedProperty(ctx.request.body as unknown as any);
+  let validData;
+  if (metadata.reqBodyClass) {
+    const dtoInstance = plainToInstance(metadata.reqBodyClass, body);
+    const errors = await validate(dtoInstance, {
+      skipNullProperties: true,
+      skipUndefinedProperties: true,
+      skipMissingProperties: true,
+    });
+    if (errors.length > 0) {
+      const errorMessages = errors.map((err) => Object.values(err.constraints || {})).flat();
+      console.log(errorMessages);
+      if (errorMessages) ctx.throw(400, errorMessages);
+    } else {
+      validData = dtoInstance;
+    }
+  } else {
+    if (metadata.isOnlyRoot) {
+      validData = {
+        root: body,
+      };
+    }
+    if (metadata.schemaMap) {
+      const { error, value } = await promiseValidate(metadata.schemaMap, body);
+      if (error) ctx.throw(400, error);
+      validData = value;
+    }
   }
-  const { error, value } = await promiseValidate(metadata.schemaMap, body);
-  if (error) ctx.throw(400, error);
+
   const result = {} as Record<number, any>;
   if (metadata.isOnlyRoot) {
-    result[metadata.index] = value['root'];
+    result[metadata.index] = validData['root'];
   } else {
-    result[metadata.index] = value;
+    result[metadata.index] = validData;
   }
   return result;
 }
@@ -204,8 +233,8 @@ async function getCtxParams(ctx: Context, paramNames: string[], metadata: Parame
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
-    const fieldName = paramNames[item.index].toLowerCase();
-    result[item.index] = value[fieldName];
+    const fieldName = paramNames[item.index]?.toLowerCase();
+    if (fieldName) result[item.index] = value[fieldName];
   }
   return result;
 }
@@ -226,15 +255,17 @@ async function getFunctionParams(
   const needValidData: { [key: string]: any } = {};
   for (const item of metadata) {
     const fieldName = paramNames[item.index];
-    schemaMap[fieldName.toLowerCase()] = await item.value.call({}, app, ctx);
-    needValidData[fieldName.toLowerCase()] = getKindValue(ctx, item.kind, fieldName);
+    if (fieldName) {
+      schemaMap[fieldName.toLowerCase()] = await item.value.call({}, app, ctx);
+      needValidData[fieldName.toLowerCase()] = getKindValue(ctx, item.kind, fieldName);
+    }
   }
   const { error, value } = await promiseValidate(schemaMap, needValidData);
   if (error) ctx.throw(400, error);
   const result = {} as Record<number, any>;
   for (const item of metadata.sort((a, b) => a.index - b.index)) {
-    const fieldName = paramNames[item.index].toLowerCase();
-    result[item.index] = value[fieldName];
+    const fieldName = paramNames[item.index]?.toLowerCase();
+    if (fieldName) result[item.index] = value[fieldName];
   }
   return result;
 }
@@ -258,9 +289,9 @@ function getKindValue(ctx: Context, kind: PFunctionKind, name: string): any {
 type RouterPath = string | RegExp | (string | RegExp)[];
 export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?: TitMiddleware[] }) {
   return function (target: any, propertyName: string, descriptor: TypedPropertyDescriptor<any>): void {
-    const method = descriptor.value;
-    if (isNullOrUndefined(method)) throw Error('method need a function');
-    const paramNames = getParamNames(method);
+    const handler = descriptor.value;
+    if (isNullOrUndefined(handler)) throw Error('method need a function');
+    const paramNames = getRouterHandlerParamNames(handler);
 
     const metadata = scanTargetMetaData(target, propertyName);
 
@@ -304,17 +335,31 @@ export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?:
       }
 
       const inParameters = map2Array(params);
-      await method.apply({ ctx, app }, inParameters);
+      const result = await handler.apply({ ctx, app }, inParameters);
+      if (!isNullOrUndefined(result)) {
+        ctx.body = result;
+      }
       if (next) await next();
     };
 
     const constructor = target.constructor;
-    const controllerMetadata: ClassControllerMetaData = Reflect.getMetadata(CLASS_CONTROLLER_METADATA, constructor) || {
-      routerPropertyName: [],
-    };
-    controllerMetadata.routerPropertyName.push(propertyName);
-    Reflect.defineMetadata(CLASS_CONTROLLER_METADATA, controllerMetadata, constructor);
     const routerMetadata: MethodRouterMetaData = ops;
     Reflect.defineMetadata(METHOD_ROUTER_METADATA, routerMetadata, constructor, propertyName);
+
+    const controllerMetadata: ClassControllerMetaData = Reflect.getMetadata(CLASS_CONTROLLER_METADATA, constructor) || {
+      routerData: [],
+    };
+    controllerMetadata.routerData.push({
+      name: propertyName,
+      paramNames,
+      metadata: metadata,
+    });
+    Reflect.defineMetadata(CLASS_CONTROLLER_METADATA, controllerMetadata, constructor);
   };
+}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getRouterHandlerParamNames(func: any) {
+  if (isNullOrUndefined(func)) throw Error('func need a function');
+  const paramNames = getParamNames(func);
+  return paramNames;
 }

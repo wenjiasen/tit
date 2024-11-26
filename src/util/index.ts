@@ -11,7 +11,7 @@ export function map2Array<T>(obj: Record<number, T>): T[] {
   return keys
     .sort((a, b) => Number.parseInt(a) - Number.parseInt(b))
     .map((n) => {
-      return obj[Number.parseInt(n)];
+      return obj[Number.parseInt(n)] as T;
     });
 }
 
@@ -55,4 +55,8 @@ export function lowerCaseObjectProperties(query: unknown): Record<string, unknow
     result[name.toLowerCase()] = (query as Record<string, unknown>)[name];
   }
   return result;
+}
+
+export interface Constructor<T> {
+  new (...args: unknown[]): T;
 }
