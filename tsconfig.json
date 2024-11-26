@@ -4,11 +4,6 @@
   },
   "compilerOptions": {
     "baseUrl": "./",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-    },
     "target": "ESNext",
     "module": "NodeNext",
     "declaration": true,

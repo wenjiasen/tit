@@ -6,7 +6,7 @@ import TestAgent from 'supertest/lib/agent';
 import { test, describe, beforeAll } from '@jest/globals';
 import { RouterContext } from '@koa/router';
 import { Next } from 'koa';
-import { openApiBuilder } from '@/openapi';
+// import { openApiBuilder } from '../../src/openapi';
 import { PostCreate } from './dto/post.dto';
 
 describe('Router', () => {
@@ -15,16 +15,20 @@ describe('Router', () => {
 
   // 在所有测试之前运行，初始化共享变量
   beforeAll(async () => {
-    app = await ApplicationFactory.create();
-    app.use(async (ctx: RouterContext, next: Next): Promise<void> => {
-      ctx['trailID'] = 'trail_001';
-      ctx['trailIDFunc'] = 'trail_002';
-      await next();
-    });
-    app.use(app.rootRouter.routes());
+    try {
+      app = await ApplicationFactory.create();
+      app.use(async (ctx: RouterContext, next: Next): Promise<void> => {
+        ctx['trailID'] = 'trail_001';
+        ctx['trailIDFunc'] = 'trail_002';
+        await next();
+      });
+      app.use(app.rootRouter.routes());
 
-    console.log('yaml-------->\n', openApiBuilder.getSpecAsYaml());
-    agent = supertest(http.createServer(app.callback()));
+      // console.log('yaml-------->\n', openApiBuilder.getSpecAsYaml());
+      agent = supertest(http.createServer(app.callback()));
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   // test('router load', async () => {

@@ -1,4 +1,4 @@
-import { TitServer } from '@/index';
+import { TitServer } from '../../../src';
 
 export class TestServer extends TitServer {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
