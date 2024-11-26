@@ -287,7 +287,7 @@ function getKindValue(ctx: Context, kind: PFunctionKind, name: string): any {
 }
 
 type RouterPath = string | RegExp | (string | RegExp)[];
-export function Router(ops: { path: RouterPath; method: HttpMethod; middleware?: TitMiddleware[] }) {
+export function Router(ops: MethodRouterMetaData) {
   return function (target: any, propertyName: string, descriptor: TypedPropertyDescriptor<any>): void {
     const handler = descriptor.value;
     if (isNullOrUndefined(handler)) throw Error('method need a function');

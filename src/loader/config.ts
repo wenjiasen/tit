@@ -7,12 +7,12 @@ export class ConfigLoader {
   private readonly defaultConfig: IConfig = { port: 80, log: { level: 'info' } };
 
   public async load(): Promise<IConfig> {
-    const rootPath = path.resolve(getSourceRoot(), './config/index');
+    const rootPath = path.resolve(getSourceRoot(), './config');
     if (!fs.existsSync(rootPath)) {
-      // console.warn(`Not exists controller directory '${rootPath}'`);
       return this.defaultConfig;
     }
-    const data = await import(rootPath);
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const data = await require(rootPath);
     return Object.assign(this.defaultConfig, data);
   }
 }

@@ -10,6 +10,7 @@ import Joi from 'joi';
 
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { openApiBuilder } from '../../openapi';
+import { Constructor } from 'src/util';
 
 type RouterMetadata = {
   name: string | symbol;
@@ -51,9 +52,9 @@ function isFieldRequired(schema: Joi.AnySchema): boolean {
   return !!(schemaDescription.flags && (schemaDescription.flags as Record<string, string>)['presence'] === 'required');
 }
 
-export function Controller(ops?: { prefix?: string }) {
+export function Controller(ops?: { prefix?: string; tags?: string[]; summary?: string; description?: string }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function (target: { prototype: any }): void {
+  return function (target: Constructor<any>): void {
     const controllerMetadata: ClassControllerMetaData | undefined = Reflect.getMetadata(CLASS_CONTROLLER_METADATA, target);
     controllerMetadata?.routerData?.forEach(({ name: routerName, paramNames, metadata }) => {
       const routerMetadata: MethodRouterMetaData = Reflect.getMetadata(METHOD_ROUTER_METADATA, target, routerName);
@@ -123,7 +124,6 @@ export function Controller(ops?: { prefix?: string }) {
           let resBody: (ResponseObject | ReferenceObject) | undefined;
           if (routerMetadata.responseBodyClass) {
             const schema = validationMetadatasToSchemas({ schemaNameField: routerMetadata.responseBodyClass.name });
-            console.log('schema------>', schema);
             openApiBuilder.addSchema(routerMetadata.responseBodyClass.name, schema);
             resBody = {
               description: '',
@@ -143,6 +143,7 @@ export function Controller(ops?: { prefix?: string }) {
               enumerable: true,
               value: {
                 summary: routerMetadata.summary,
+                tags: routerMetadata.tags || ops?.tags || [target.name],
                 description: routerMetadata.description,
                 parameters: matchInPath.concat(matchInQuery),
                 requestBody: reqBody,
