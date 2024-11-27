@@ -4,7 +4,7 @@ import { Next, Middleware, ParameterizedContext } from 'koa';
 import koaRouter from '@koa/router';
 import { HttpMethod } from '../../lib';
 import { app } from '../../factory';
-import { OperationObject, ParameterObject, ReferenceObject, RequestBodyObject, ResponseObject, SchemaObject } from 'openapi3-ts/oas31';
+import { OperationObject, ParameterObject, ReferenceObject, RequestBodyObject, ResponsesObject, SchemaObject } from 'openapi3-ts/oas31';
 import * as parse from 'joi-to-json';
 import Joi from 'joi';
 
@@ -95,13 +95,20 @@ export function Controller(ops?: { prefix?: string; tags?: string[]; summary?: s
               };
             }) ?? [];
 
+          const schemas = validationMetadatasToSchemas({
+            refPointerPrefix: '#/components/schemas/',
+          });
+          for (const key in schemas) {
+            if (Object.prototype.hasOwnProperty.call(schemas, key)) {
+              const schema = schemas[key];
+              if (schema) {
+                openApiBuilder.addSchema(key, schema as SchemaObject);
+              }
+            }
+          }
+
           let reqBody: (RequestBodyObject | ReferenceObject) | undefined;
           if (metadata.body?.reqBodyClass) {
-            const schemas = validationMetadatasToSchemas();
-            const schema = schemas[metadata.body.reqBodyClass.name];
-            if (schema) {
-              openApiBuilder.addSchema(metadata.body.reqBodyClass.name, schema as SchemaObject);
-            }
             reqBody = {
               content: {
                 'application/json': {
@@ -121,16 +128,16 @@ export function Controller(ops?: { prefix?: string; tags?: string[]; summary?: s
             };
           }
 
-          let resBody: (ResponseObject | ReferenceObject) | undefined;
+          let resBody: ResponsesObject | undefined;
           if (routerMetadata.responseBodyClass) {
-            const schema = validationMetadatasToSchemas({ schemaNameField: routerMetadata.responseBodyClass.name });
-            openApiBuilder.addSchema(routerMetadata.responseBodyClass.name, schema);
             resBody = {
-              description: '',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: `#/components/schemas/${routerMetadata.responseBodyClass.name}`,
+              default: {
+                description: '',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: `#/components/schemas/${routerMetadata.responseBodyClass.name}`,
+                    },
                   },
                 },
               },

@@ -58,5 +58,6 @@ export function lowerCaseObjectProperties(query: unknown): Record<string, unknow
 }
 
 export interface Constructor<T> {
-  new (...args: unknown[]): T;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  new (...args: any[]): T;
 }
