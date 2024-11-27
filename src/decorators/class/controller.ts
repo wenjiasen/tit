@@ -149,7 +149,7 @@ export function Controller(ops?: { prefix?: string; tags?: string[]; summary?: s
             Object.defineProperty<OperationObject>({} as OperationObject, routerMetadata.method, {
               enumerable: true,
               value: {
-                summary: routerMetadata.summary,
+                summary: routerMetadata.summary || routerName,
                 tags: routerMetadata.tags || ops?.tags || [target.name],
                 description: routerMetadata.description,
                 parameters: matchInPath.concat(matchInQuery),
