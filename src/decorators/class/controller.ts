@@ -9,6 +9,9 @@ import * as parse from 'joi-to-json';
 import Joi from 'joi';
 
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
+// See https://github.com/typestack/class-transformer/issues/563 for alternatives
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { defaultMetadataStorage } = require('class-transformer/cjs/storage');
 import { openApiBuilder } from '../../openapi';
 import { Constructor } from 'src/util';
 
@@ -97,6 +100,7 @@ export function Controller(ops?: { prefix?: string; tags?: string[]; summary?: s
 
           const schemas = validationMetadatasToSchemas({
             refPointerPrefix: '#/components/schemas/',
+            classTransformerMetadataStorage: defaultMetadataStorage,
           });
           for (const key in schemas) {
             if (Object.prototype.hasOwnProperty.call(schemas, key)) {
