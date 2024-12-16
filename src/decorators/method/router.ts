@@ -172,11 +172,7 @@ async function getRouterBody(ctx: Context, metadata: ReqBodyMetaData): Promise<R
   let validData;
   if (metadata.reqBodyClass) {
     const dtoInstance = plainToInstance<object, unknown>(metadata.reqBodyClass, body);
-    const errors = await validate(dtoInstance, {
-      skipNullProperties: true,
-      skipUndefinedProperties: true,
-      skipMissingProperties: true,
-    });
+    const errors = await validate(dtoInstance);
     if (errors.length > 0) {
       const errorMessages = errors.map((err) => Object.values(err.constraints || {})).flat();
       console.log(errorMessages);
